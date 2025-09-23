@@ -3,7 +3,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CreatUserCommandHandler } from '../application/handlers/create-user-command.handler';
+import { GetAppsQueryHandler } from '../application/handlers/get-apps-query.handler';
 import { LoginCommandHandler } from '../application/handlers/login-command.handler';
+import { RefreshTokenCommandHandler } from '../application/handlers/refresh-token-command.handler';
 import { AUTH_REPOSITORY } from '../application/ports/auth-repository.interface';
 import { USER_REPOSITORY } from '../application/ports/user-repository.interface';
 import { UserMaper } from '../infrastructure/mappers/user.mapper';
@@ -21,6 +23,7 @@ import { IdentityCommandController } from '../presentation/controllers/iam/authe
 import { SecurityCommandController } from '../presentation/controllers/uam/securitCommand.controller';
 import { SecurityQueryController } from '../presentation/controllers/uam/securityQuery.controller';
 import { JwtStrategy } from '../shared/strategy';
+import { CoreModule } from './core.module';
 import { SharedModule } from './shared.module';
 @Module({
   controllers: [
@@ -29,6 +32,7 @@ import { SharedModule } from './shared.module';
     SecurityQueryController,
   ],
   imports: [
+    CoreModule,
     CqrsModule,
     MongooseModule.forFeature([
       { name: UserDocument.name, schema: userSchema },
@@ -50,6 +54,8 @@ import { SharedModule } from './shared.module';
     },
     CreatUserCommandHandler,
     LoginCommandHandler,
+    RefreshTokenCommandHandler,
+    GetAppsQueryHandler,
     JwtStrategy,
   ],
 })

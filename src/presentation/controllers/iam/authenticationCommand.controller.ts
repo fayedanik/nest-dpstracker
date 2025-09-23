@@ -16,6 +16,7 @@ import { LoginCommand } from '../../../application/commands/login.command';
 import { RefreshTokenCommand } from '../../../application/commands/refresh-token.command';
 import { RefreshTokenCommandDto } from '../../../presentation/dtos/refresh-token-command.dto';
 import { LoginCommandResponseDto } from '../../../presentation/dtos/response-dtos/login-command-response.dto';
+import { RefreshTokenCommandResponseDto } from '../../../presentation/dtos/response-dtos/refresh-command-response.dto';
 import { CommandResponse } from '../../../shared/generic-class/command-response.class';
 import { CookieService } from '../../../shared/services/cookie.service';
 import { LoginCommandDto } from '../../dtos/login-command.dto';
@@ -23,14 +24,18 @@ import { LoginCommandDto } from '../../dtos/login-command.dto';
 @Controller('IdentityCommand')
 export class IdentityCommandController {
   private readonly _refreshCookie = 'refresh_token';
-  private _refreshTokenCookieExperity = 604800;
+  private _refreshTokenCookieExperity = 604800 * 1000;
   constructor(
     private readonly commandBus: CommandBus,
     private cookieService: CookieService,
     private configService: ConfigService<IAppConfig>,
   ) {
     this._refreshTokenCookieExperity =
-      this.configService.get('ACCESS_TOKEN_EXPIRTY_IN_MINUTES') * 24 * 60 * 60;
+      this.configService.get('ACCESS_TOKEN_EXPIRTY_IN_MINUTES') *
+      24 *
+      60 *
+      60 *
+      1000;
   }
 
   @Post('Login')
@@ -48,6 +53,7 @@ export class IdentityCommandController {
       this.cookieService.clearCookie(res, this._refreshCookie);
       throw new UnauthorizedException(response.message);
     }
+    console.log(this._refreshTokenCookieExperity);
     this.cookieService.setCookie(
       res,
       this._refreshCookie,
@@ -56,11 +62,23 @@ export class IdentityCommandController {
     );
     return response;
   }
-  @Post('Refresh')
+  @Post('RefreshToken')
   @HttpCode(HttpStatus.OK)
-  Refresh(@Body() dto: RefreshTokenCommandDto, @Req() req: Request) {
-    console.log(req.cookies['refresh_token']);
-    const command = new RefreshTokenCommand(dto.refreshToken);
-    return this.commandBus.execute(command);
+  async Refresh(
+    @Body() dto: RefreshTokenCommandDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies[`${this._refreshCookie}`] as string;
+    const command = new RefreshTokenCommand(dto.userId, refreshToken);
+    const response = await this.commandBus.execute<
+      RefreshTokenCommand,
+      CommandResponse<RefreshTokenCommandResponseDto>
+    >(command);
+    if (!response || !response.success || !response.data) {
+      this.cookieService.clearCookie(res, this._refreshCookie);
+      throw new UnauthorizedException(response.message);
+    }
+    return response;
   }
 }

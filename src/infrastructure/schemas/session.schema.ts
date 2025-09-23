@@ -7,7 +7,7 @@ export class Session {
   @Prop({ type: String, required: true })
   userId: string;
   @Prop({ type: String, required: true })
-  refreshToken: string;
+  refreshTokenHash: string;
   @Prop({ type: String, required: true })
   clientId: string;
   @Prop({ type: Date, required: true })

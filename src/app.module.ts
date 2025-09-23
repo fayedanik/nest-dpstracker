@@ -20,6 +20,7 @@ import { IAppConfig } from './shared/interfaces/app-config.interface';
     }),
     AuthModule,
   ],
+  exports: [],
   controllers: [],
   providers: [],
 })

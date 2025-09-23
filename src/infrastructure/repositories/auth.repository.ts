@@ -49,18 +49,23 @@ export class AuthRepository implements IAuthRepository {
 
   async refresh(
     userId: string,
-    refreshHash: string,
+    refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null> {
     const user = await this.userRepository.getItem({ id: userId });
     if (!user) return null;
     const session = await this.sessionModel.findOne({ userId: userId }).exec();
-    if (!session || !session.toObject()?.refreshToken) return null;
+    if (
+      !session ||
+      !session.toObject()?.refreshTokenHash ||
+      new Date() > new Date(session.toObject().expiredAt)
+    )
+      return null;
     const isRefreshTokenValid = await argon.verify(
-      session.toObject().refreshToken,
-      refreshHash,
+      session.toObject().refreshTokenHash,
+      refreshToken,
     );
     if (!isRefreshTokenValid) return null;
-    return await this.generateTokens(user);
+    return await this.generateTokens(user, true, refreshToken);
   }
 
   private getUserJwtPayload(user: User) {
@@ -72,18 +77,26 @@ export class AuthRepository implements IAuthRepository {
     };
   }
 
-  private async generateTokens(user: User) {
+  private async generateTokens(
+    user: User,
+    skipRefreshTokenGeneration: boolean = false,
+    refreshToken: string = '',
+  ) {
     const payload = this.getUserJwtPayload(user);
     const accessTokenExpiretyInMinutes = this.configService.get<number>(
       'ACCESS_TOKEN_EXPIRTY_IN_MINUTES',
     ) as number;
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: accessTokenExpiretyInMinutes * 60,
+      expiresIn: accessTokenExpiretyInMinutes * 60, // in second
     });
-    const refreshToken = randomUUID();
-    await this.updateRefreshToken(user.id, refreshToken);
-    return { accessToken, refreshToken };
+    if (skipRefreshTokenGeneration) {
+      return { accessToken, refreshToken };
+    } else {
+      const refreshToken = randomUUID();
+      await this.updateRefreshToken(user.id, refreshToken);
+      return { accessToken, refreshToken };
+    }
   }
 
   private async updateRefreshToken(userId: string, refreshToken: string) {
@@ -93,7 +106,7 @@ export class AuthRepository implements IAuthRepository {
     ) as number;
     const updateQuery: UpdateQuery<Session> = {
       userId,
-      refreshToken: hashedRefreshToken,
+      refreshTokenHash: hashedRefreshToken,
       clientId: this.configService.get<string>('TENANT_ID'),
       issuedAt: new Date(),
       expiredAt: new Date(

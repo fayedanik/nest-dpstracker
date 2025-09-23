@@ -6,6 +6,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
+import { GetAppsQuery } from 'src/application/queries/get-apps.query';
 import { Role } from '../../../shared/consts/role.const';
 import { Roles } from '../../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
@@ -17,9 +18,9 @@ export class SecurityQueryController {
 
   @HttpCode(HttpStatus.OK)
   @Get('GetApps')
-  @Roles(Role.User)
+  @Roles([Role.User, Role.Admin])
   @UseGuards(JwtAuthGuard, RolesGuard)
   GetApps() {
-    return 'Get App List';
+    return this.queryBus.execute(new GetAppsQuery());
   }
 }
