@@ -9,7 +9,11 @@ export class Session {
   @Prop({ type: String, required: true })
   refreshTokenHash: string;
   @Prop({ type: String, required: true })
+  argonHash: string;
+  @Prop({ type: String, required: true })
   clientId: string;
+  @Prop({ type: Boolean, default: true })
+  valid: boolean;
   @Prop({ type: Date, required: true })
   issuedAt: Date;
   @Prop({ type: Date, required: true })

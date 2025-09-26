@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
-import { randomUUID } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import { Model, UpdateQuery } from 'mongoose';
 import { IAuthRepository } from '../../application/ports/auth-repository.interface';
 import {
@@ -48,24 +48,29 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async refresh(
-    userId: string,
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null> {
-    const user = await this.userRepository.getItem({ id: userId });
-    if (!user) return null;
-    const session = await this.sessionModel.findOne({ userId: userId }).exec();
+    const refreshTokenHash = this.createHash(refreshToken);
+    const session = (
+      await this.sessionModel
+        .findOne({ refreshTokenHash: refreshTokenHash })
+        .exec()
+    )?.toObject();
     if (
       !session ||
-      !session.toObject()?.refreshTokenHash ||
-      new Date() > new Date(session.toObject().expiredAt)
+      !session.refreshTokenHash ||
+      new Date() > new Date(session.expiredAt)
     )
       return null;
-    const isRefreshTokenValid = await argon.verify(
-      session.toObject().refreshTokenHash,
+    const isValidRefreshToken = await argon.verify(
+      session.argonHash,
       refreshToken,
     );
-    if (!isRefreshTokenValid) return null;
-    return await this.generateTokens(user, true, refreshToken);
+    const user = await this.userRepository.getItem({
+      id: session.userId,
+    });
+    if (!user || !isValidRefreshToken) return null;
+    return await this.generateTokens(user);
   }
 
   private getUserJwtPayload(user: User) {
@@ -77,11 +82,7 @@ export class AuthRepository implements IAuthRepository {
     };
   }
 
-  private async generateTokens(
-    user: User,
-    skipRefreshTokenGeneration: boolean = false,
-    refreshToken: string = '',
-  ) {
+  private async generateTokens(user: User) {
     const payload = this.getUserJwtPayload(user);
     const accessTokenExpiretyInMinutes = this.configService.get<number>(
       'ACCESS_TOKEN_EXPIRTY_IN_MINUTES',
@@ -90,23 +91,21 @@ export class AuthRepository implements IAuthRepository {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
       expiresIn: accessTokenExpiretyInMinutes * 60, // in second
     });
-    if (skipRefreshTokenGeneration) {
-      return { accessToken, refreshToken };
-    } else {
-      const refreshToken = randomUUID();
-      await this.updateRefreshToken(user.id, refreshToken);
-      return { accessToken, refreshToken };
-    }
+    const refreshToken = randomUUID();
+    await this.updateRefreshToken(user.id, refreshToken);
+    return { accessToken, refreshToken };
   }
 
   private async updateRefreshToken(userId: string, refreshToken: string) {
-    const hashedRefreshToken = await argon.hash(refreshToken);
+    const refreshTokenArgonHash = await argon.hash(refreshToken);
+    const refreshHash = this.createHash(refreshToken);
     const refreshTokenExpiretyInDays = this.configService.get<number>(
       'REFRESH_TOKEN_EXPIRTY_IN_DAYS',
     ) as number;
     const updateQuery: UpdateQuery<Session> = {
       userId,
-      refreshTokenHash: hashedRefreshToken,
+      refreshTokenHash: refreshHash,
+      argonHash: refreshTokenArgonHash,
       clientId: this.configService.get<string>('TENANT_ID'),
       issuedAt: new Date(),
       expiredAt: new Date(
@@ -117,5 +116,9 @@ export class AuthRepository implements IAuthRepository {
       upsert: true,
       new: true,
     });
+  }
+
+  private createHash(token: string) {
+    return createHash('sha256').update(token).digest('hex');
   }
 }

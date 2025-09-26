@@ -5,7 +5,6 @@ export interface IAuthRepository {
     password: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null>;
   refresh(
-    userId: string,
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null>;
 }

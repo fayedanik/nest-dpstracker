@@ -53,7 +53,6 @@ export class IdentityCommandController {
       this.cookieService.clearCookie(res, this._refreshCookie);
       throw new UnauthorizedException(response.message);
     }
-    console.log(this._refreshTokenCookieExperity);
     this.cookieService.setCookie(
       res,
       this._refreshCookie,
@@ -70,7 +69,8 @@ export class IdentityCommandController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const refreshToken = req.cookies[`${this._refreshCookie}`] as string;
-    const command = new RefreshTokenCommand(dto.userId, refreshToken);
+    console.log(refreshToken);
+    const command = new RefreshTokenCommand(refreshToken);
     const response = await this.commandBus.execute<
       RefreshTokenCommand,
       CommandResponse<RefreshTokenCommandResponseDto>
@@ -79,6 +79,12 @@ export class IdentityCommandController {
       this.cookieService.clearCookie(res, this._refreshCookie);
       throw new UnauthorizedException(response.message);
     }
+    this.cookieService.setCookie(
+      res,
+      this._refreshCookie,
+      response.data.refresh_token,
+      { maxAge: this._refreshTokenCookieExperity },
+    );
     return response;
   }
 }

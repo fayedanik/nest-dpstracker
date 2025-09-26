@@ -25,12 +25,9 @@ export class RefreshTokenCommandHandler
     command: RefreshTokenCommand,
   ): Promise<CommandResponse<RefreshTokenCommandResponseDto>> {
     try {
-      const response = await this.authRepository.refresh(
-        command.userId,
-        command.refreshToken,
-      );
+      const response = await this.authRepository.refresh(command.refreshToken);
       if (!response || !response.accessToken) {
-        return CommandResponse.failure(ErrorMessageConst.INVALID_ACCESS_TOKEN);
+        return CommandResponse.failure(ErrorMessageConst.INVALID_REFRESH_TOKEN);
       }
       return new CommandResponse(
         SuccessMessageConst.ACCESS_TOKEN_GENERATION_SUCCESS,
@@ -41,7 +38,7 @@ export class RefreshTokenCommandHandler
         },
       );
     } catch (error: any) {
-      return CommandResponse.failure(ErrorMessageConst.INVALID_ACCESS_TOKEN);
+      return CommandResponse.failure(ErrorMessageConst.INVALID_REFRESH_TOKEN);
     }
   }
 }
