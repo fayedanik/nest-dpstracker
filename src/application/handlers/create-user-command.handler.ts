@@ -9,8 +9,8 @@ import { User } from '../../domain/entities/user.entity';
 import { ErrorMessageConst } from '../../shared/consts/error.const';
 import { CreateUserCommand } from '../commands/create-user.command';
 import {
-  USER_REPOSITORY,
   type IUserRepository,
+  USER_REPOSITORY,
 } from '../ports/user-repository.interface';
 
 @CommandHandler(CreateUserCommand)
@@ -28,7 +28,7 @@ export class CreatUserCommandHandler
       if (existingUser) {
         throw new BadRequestException(ErrorMessageConst.USER_ALREADY_EXISTS);
       }
-      const response = await this.userRepository.save(
+      return await this.userRepository.save(
         new User(
           command.email,
           command.firstName ?? '',
@@ -37,7 +37,6 @@ export class CreatUserCommandHandler
           command.phoneNumber ?? '',
         ),
       );
-      return response;
     } catch (error: any) {
       throw new HttpException(
         {

@@ -4,20 +4,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CreatUserCommandHandler } from '../application/handlers/create-user-command.handler';
 import { GetAppsQueryHandler } from '../application/handlers/get-apps-query.handler';
+import { GetUserQueryHandler } from '../application/handlers/get-user-query.handler';
+import { GetUsersQueryHandler } from '../application/handlers/get-users-query.handler';
+import { LogoutCommandHandler } from '../application/handlers/log-out-command.handler';
 import { LoginCommandHandler } from '../application/handlers/login-command.handler';
 import { RefreshTokenCommandHandler } from '../application/handlers/refresh-token-command.handler';
 import { AUTH_REPOSITORY } from '../application/ports/auth-repository.interface';
 import { USER_REPOSITORY } from '../application/ports/user-repository.interface';
-import { UserMaper } from '../infrastructure/mappers/user.mapper';
+import { UserMapper } from '../infrastructure/mappers/user.mapper';
 import { AuthRepository } from '../infrastructure/repositories/auth.repository';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import {
   Session,
-  sessionSchema,
+  SessionDocument,
+  SessionSchema,
 } from '../infrastructure/schemas/session.schema';
 import {
   UserDocument,
-  userSchema,
+  UserSchema,
 } from '../infrastructure/schemas/user.schema';
 import { IdentityCommandController } from '../presentation/controllers/iam/authenticationCommand.controller';
 import { SecurityCommandController } from '../presentation/controllers/uam/securitCommand.controller';
@@ -35,15 +39,15 @@ import { SharedModule } from './shared.module';
     CoreModule,
     CqrsModule,
     MongooseModule.forFeature([
-      { name: UserDocument.name, schema: userSchema },
-      { name: Session.name, schema: sessionSchema },
+      { name: UserDocument.name, schema: UserSchema },
+      { name: SessionDocument.name, schema: SessionSchema },
     ]),
     JwtModule.register({}),
     SharedModule,
   ],
   exports: [],
   providers: [
-    UserMaper,
+    UserMapper,
     {
       provide: USER_REPOSITORY,
       useClass: UserRepository,
@@ -54,8 +58,11 @@ import { SharedModule } from './shared.module';
     },
     CreatUserCommandHandler,
     LoginCommandHandler,
+    LogoutCommandHandler,
     RefreshTokenCommandHandler,
     GetAppsQueryHandler,
+    GetUsersQueryHandler,
+    GetUserQueryHandler,
     JwtStrategy,
   ],
 })

@@ -1,17 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseSchema } from './base.schema';
+import { Role } from '../../shared/consts/role.const';
 
 @Schema({ collection: `users`, timestamps: true, versionKey: false })
 export class UserDocument extends BaseSchema {
-  @Prop({ type: String, default: uuidv4 })
-  declare _id: string;
-
   @Prop({ required: true })
   firstName: string;
 
   @Prop({ required: true })
   lastName: string;
+
+  @Prop({ required: true })
+  displayName: string;
 
   @Prop({ required: true, select: false })
   password: string;
@@ -21,6 +22,9 @@ export class UserDocument extends BaseSchema {
 
   @Prop({ required: true })
   phoneNumber: string;
+
+  @Prop({ type: [String], default: [Role.User] })
+  roles: string[];
 
   @Prop({ type: Boolean, default: false })
   isActive: boolean;
@@ -50,4 +54,4 @@ export class UserDocument extends BaseSchema {
   passwordResetExpires: Date | null;
 }
 
-export const userSchema = SchemaFactory.createForClass(UserDocument);
+export const UserSchema = SchemaFactory.createForClass(UserDocument);

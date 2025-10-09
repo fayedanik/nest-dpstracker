@@ -3,7 +3,7 @@ import { IMapper } from '../../domain/common/maper.interface';
 import { User } from '../../domain/entities/user.entity';
 import { UserDocument } from '../schemas/user.schema';
 
-export class UserMaper implements IMapper<User, UserDocument> {
+export class UserMapper implements IMapper<User, UserDocument> {
   toDomain(raw: UserDocument): User {
     const { password, ...rest } = raw; // Exclude password from the domain entity
     return {
@@ -21,9 +21,10 @@ export class UserMaper implements IMapper<User, UserDocument> {
   }
 
   toPersistFilter(
-    domain: FilterQuery<Partial<User>>,
+    domain?: FilterQuery<Partial<User>>,
   ): FilterQuery<Partial<UserDocument>> {
     const filter: FilterQuery<Partial<UserDocument>> = {};
+    if (!domain) return filter;
     if (domain.email) filter.email = domain.email;
     if (domain.id) filter._id = domain.id;
     return filter;

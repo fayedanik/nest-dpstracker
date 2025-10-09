@@ -4,21 +4,30 @@ import * as argon from 'argon2';
 import { Model } from 'mongoose';
 import { IUserRepository } from '../../application/ports/user-repository.interface';
 import { User } from '../../domain/entities/user.entity';
-import { UserMaper } from '../mappers/user.mapper';
+import { UserMapper } from '../mappers/user.mapper';
 import { UserDocument } from '../schemas/user.schema';
-import { MongoBaseRepository } from './generic.repository';
+import { GenericRepository } from './generic.repository';
 
 @Injectable()
 export class UserRepository
-  extends MongoBaseRepository<User, UserDocument>
+  extends GenericRepository<User, UserDocument>
   implements IUserRepository
 {
   constructor(
     @InjectModel(UserDocument.name)
     private readonly userModel: Model<UserDocument>,
-    private userMapper: UserMaper,
+    private readonly userMapper: UserMapper,
   ) {
     super(userModel, userMapper);
+  }
+
+  async getUsers(): Promise<User[]> {
+    try {
+      const userlist = await this.getItems();
+      return userlist;
+    } catch (err) {
+      return [] as User[];
+    }
   }
   async getUserPasswordHash(email: string): Promise<string | null> {
     try {
@@ -38,7 +47,11 @@ export class UserRepository
         return false;
       }
       const passwordHash = await argon.hash(user.password);
-      const savedUser = await this.insert({ ...user, password: passwordHash });
+      const savedUser = await this.insert({
+        ...user,
+        password: passwordHash,
+        displayName: user.firstName + ' ' + user.lastName,
+      });
       return savedUser ? true : false;
     } catch (error: any) {
       return false;

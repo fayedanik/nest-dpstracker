@@ -2,7 +2,7 @@ import { Document, FilterQuery, Model } from 'mongoose';
 import { IRepository } from 'src/application/ports/generic-repository.interface';
 import { IMapper } from '../../domain/common/maper.interface';
 
-export class MongoBaseRepository<TDomain, TPersist extends Document>
+export class GenericRepository<TDomain, TPersist extends Document>
   implements IRepository<TDomain>
 {
   constructor(
@@ -10,10 +10,14 @@ export class MongoBaseRepository<TDomain, TPersist extends Document>
     private readonly mapper: IMapper<TDomain, TPersist>,
   ) {}
 
-  async insert(entity: TDomain): Promise<TDomain> {
+  async insert(entity: TDomain): Promise<TDomain | null> {
     const doc = new this.model(this.mapper.toPersistence(entity));
-    const saved = await doc.save();
-    return this.mapper.toDomain(saved.toObject());
+    try {
+      const saved = await doc.save();
+      return this.mapper.toDomain(saved.toObject());
+    } catch (err) {
+      return null;
+    }
   }
 
   async getItem(filter: FilterQuery<TDomain>): Promise<TDomain | null> {
@@ -23,7 +27,7 @@ export class MongoBaseRepository<TDomain, TPersist extends Document>
     return doc ? this.mapper.toDomain(doc.toObject()) : null;
   }
 
-  async getItems(filter: FilterQuery<TDomain>): Promise<TDomain[]> {
+  async getItems(filter?: FilterQuery<TDomain>): Promise<TDomain[]> {
     const doc = await this.model
       .find(this.mapper.toPersistFilter(filter))
       .exec();

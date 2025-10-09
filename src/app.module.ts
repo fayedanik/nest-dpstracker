@@ -4,6 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import databaseConfig from './config/database.config';
 import { AuthModule } from './modules/auth.module';
 import { IAppConfig } from './shared/interfaces/app-config.interface';
+import { AdminCommandController } from './presentation/controllers/adminCommand.controller';
+import { BankAccountModule } from './modules/bankAccount.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,9 +21,10 @@ import { IAppConfig } from './shared/interfaces/app-config.interface';
       }),
     }),
     AuthModule,
+    BankAccountModule,
   ],
   exports: [],
-  controllers: [],
+  controllers: [AdminCommandController],
   providers: [],
 })
 export class AppModule {}

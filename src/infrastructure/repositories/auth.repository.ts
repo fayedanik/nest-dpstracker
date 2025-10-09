@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,19 +7,21 @@ import { createHash, randomUUID } from 'crypto';
 import { Model, UpdateQuery } from 'mongoose';
 import { IAuthRepository } from '../../application/ports/auth-repository.interface';
 import {
-  USER_REPOSITORY,
   type IUserRepository,
+  USER_REPOSITORY,
 } from '../../application/ports/user-repository.interface';
 import { User } from '../../domain/entities/user.entity';
 import { IAppConfig } from '../../shared/interfaces/app-config.interface';
-import { Session } from '../schemas/session.schema';
+import { Session, SessionDocument } from '../schemas/session.schema';
 
+@Injectable()
 export class AuthRepository implements IAuthRepository {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: IUserRepository,
-    private jwtService: JwtService,
-    private configService: ConfigService<IAppConfig>,
-    @InjectModel(Session.name) private sessionModel: Model<Session>,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService<IAppConfig>,
+    @InjectModel(SessionDocument.name)
+    private readonly sessionModel: Model<Session>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<boolean> {
@@ -28,8 +30,7 @@ export class AuthRepository implements IAuthRepository {
       if (!hash) {
         return false;
       }
-      const isPasswordValid = await argon.verify(hash, password);
-      return isPasswordValid;
+      return await argon.verify(hash, password);
     } catch (error) {
       return false;
     }
@@ -43,8 +44,7 @@ export class AuthRepository implements IAuthRepository {
     if (!user) return null;
     const isValid = await this.validateUser(email, password);
     if (!isValid) return null;
-    const response = await this.generateTokens(user);
-    return response;
+    return await this.generateTokens(user);
   }
 
   async refresh(
@@ -71,6 +71,15 @@ export class AuthRepository implements IAuthRepository {
     });
     if (!user || !isValidRefreshToken) return null;
     return await this.generateTokens(user);
+  }
+
+  async terminateSession(userId: string): Promise<boolean> {
+    console.log(userId);
+    const session = await this.sessionModel.findOneAndDelete({
+      userId: userId,
+    });
+    console.log(session);
+    return true;
   }
 
   private getUserJwtPayload(user: User) {

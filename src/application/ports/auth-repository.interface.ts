@@ -4,6 +4,7 @@ export interface IAuthRepository {
     email: string,
     password: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null>;
+  terminateSession(userId: string): Promise<boolean>;
   refresh(
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null>;
