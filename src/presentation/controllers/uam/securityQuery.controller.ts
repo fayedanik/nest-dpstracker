@@ -32,7 +32,6 @@ export class SecurityQueryController {
   @Get('GetUser')
   @UseGuards(JwtAuthGuard)
   GetUser(@Query() query: any) {
-    console.log(query.id);
     return this.queryBus.execute(new GetUserQuery(query.id));
   }
 

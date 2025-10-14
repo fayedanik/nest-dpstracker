@@ -6,6 +6,8 @@ import { Role } from '../../../shared/consts/role.const';
 import { CommandBus } from '@nestjs/cqrs';
 import { AddAccountCommandDto } from '../../dtos/add-account-command.dto';
 import { AddAccountCommand } from '../../../application/commands/add-account.command';
+import { UpdateAccountCommandDto } from '../../dtos/update-account-command.dto';
+import { UpdateAccountCommand } from '../../../application/commands/update-account.command';
 
 @Controller('BankAccountCommand')
 export class BankAccountCommandController {
@@ -24,6 +26,14 @@ export class BankAccountCommandController {
       dto.accountType,
       dto.userIds,
     );
+    return this.commandBus.execute(command);
+  }
+
+  @Post('UpdateAccount')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.Admin, Role.User])
+  public UpdateAccount(@Body() dto: UpdateAccountCommandDto) {
+    const command = new UpdateAccountCommand({ ...dto });
     return this.commandBus.execute(command);
   }
 }

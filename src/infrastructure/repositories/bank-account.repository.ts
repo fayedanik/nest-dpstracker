@@ -20,6 +20,14 @@ export class BankAccountRepository
     super(bankAccountModel, bankAccountMapper);
   }
 
+  async getAccountsByUserId(userId: string): Promise<BankAccount[]> {
+    try {
+      return await this.getItems({ accountHolderUserIds: userId });
+    } catch (err) {
+      return [];
+    }
+  }
+
   async addAccount(account: BankAccount): Promise<boolean> {
     try {
       const res = await this.insert({ ...account });

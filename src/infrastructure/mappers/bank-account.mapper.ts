@@ -30,6 +30,8 @@ export class BankAccountMapper
     if (domain.id) filter._id = domain.id;
     if (domain.bankId) filter.bankId = domain.bankId;
     if (domain.branchId) filter.branchId = domain.branchId;
+    if (domain.accountHolderUserIds)
+      filter.accountHolderUserIds = domain.accountHolderUserIds;
     return filter;
   }
 

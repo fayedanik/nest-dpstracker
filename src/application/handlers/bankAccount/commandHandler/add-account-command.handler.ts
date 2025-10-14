@@ -46,14 +46,7 @@ export class AddAccountCommandHandler
       await this.bankAccountRepository.addAccount(account);
       return CommandResponse.success();
     } catch (err) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: ErrorMessageConst.INTERNAL_SERVER_ERROR,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        { cause: err },
-      );
+      return CommandResponse.failure();
     }
   }
 }

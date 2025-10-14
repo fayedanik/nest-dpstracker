@@ -11,9 +11,12 @@ import {
 import { BANK_ACCOUNT_REPOSITORY } from '../application/ports/bank-account-repository.interface';
 import { BankAccountRepository } from '../infrastructure/repositories/bank-account.repository';
 import { BankAccountMapper } from '../infrastructure/mappers/bank-account.mapper';
+import { UpdateAccountCommandHandler } from '../application/handlers/bankAccount/commandHandler/update-account-command.handler';
+import { GetAccountsQueryHandler } from '../application/handlers/bankAccount/queryHandler/get-accounts-query.handler';
+import { BankAccountQueryController } from '../presentation/controllers/bankAccount/bankAccountQuery.controller';
 
 @Module({
-  controllers: [BankAccountCommandController],
+  controllers: [BankAccountCommandController, BankAccountQueryController],
   imports: [
     CoreModule,
     CqrsModule,
@@ -27,6 +30,8 @@ import { BankAccountMapper } from '../infrastructure/mappers/bank-account.mapper
   exports: [],
   providers: [
     AddAccountCommandHandler,
+    UpdateAccountCommandHandler,
+    GetAccountsQueryHandler,
     BankAccountMapper,
     {
       provide: BANK_ACCOUNT_REPOSITORY,

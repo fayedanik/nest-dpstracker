@@ -1,3 +1,5 @@
+import { ErrorMessageConst } from '../consts/error.const';
+
 export class CommandResponse<T> {
   constructor(
     public readonly message: string,
@@ -10,7 +12,10 @@ export class CommandResponse<T> {
     return new CommandResponse<T>(message, true, data);
   }
 
-  static failure<T>(message = 'Failure', errors?: any): CommandResponse<T> {
+  static failure<T>(
+    message = ErrorMessageConst.INTERNAL_SERVER_ERROR,
+    errors?: any,
+  ): CommandResponse<T> {
     return new CommandResponse<T>(message, false, null as any, errors);
   }
 }

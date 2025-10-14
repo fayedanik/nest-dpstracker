@@ -1,25 +1,27 @@
-import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { BankAccountType } from '../../shared/consts/bankAccountType.const';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class AddAccountCommandDto {
-  @IsNotEmpty()
+export class UpdateAccountCommandDto {
   @IsString()
+  @IsNotEmpty()
+  id: string;
+
+  @IsOptional()
   accountNo: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   bankName: string;
-
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   bankId: string;
-
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   branchName: string;
-
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   branchId: string;
 
   @IsNotEmpty()
