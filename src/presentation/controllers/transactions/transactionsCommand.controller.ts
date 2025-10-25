@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { AddTransactionCommand } from '../../../application/commands/add-transaction.command';
-import { AddTransactionCommandDto } from '../../../presentation/dtos/add-trasaction-command.dto';
+import { AddTransactionCommandDto } from '../../dtos/comand-dtos/add-trasaction-command.dto';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 

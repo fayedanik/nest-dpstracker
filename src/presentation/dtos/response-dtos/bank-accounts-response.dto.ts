@@ -6,4 +6,8 @@ export interface BankAccountsResponseDto {
   branchName: string;
   branchId: string;
   accountType: string;
+  accountHolders: {
+    userId: string;
+    displayName: string;
+  }[];
 }

@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth.module';
 import { IAppConfig } from './shared/interfaces/app-config.interface';
 import { AdminCommandController } from './presentation/controllers/adminCommand.controller';
 import { BankAccountModule } from './modules/bankAccount.module';
+import { UserModule } from './modules/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({

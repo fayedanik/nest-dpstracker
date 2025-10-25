@@ -17,12 +17,12 @@ import { IAppConfig } from 'src/shared/interfaces/app-config.interface';
 import { LogoutCommand } from '../../../application/commands/log-out.command';
 import { LoginCommand } from '../../../application/commands/login.command';
 import { RefreshTokenCommand } from '../../../application/commands/refresh-token.command';
-import { RefreshTokenCommandDto } from '../../dtos/refresh-token-command.dto';
+import { RefreshTokenCommandDto } from '../../dtos/comand-dtos/refresh-token-command.dto';
 import { LoginCommandResponseDto } from '../../dtos/response-dtos/login-command-response.dto';
 import { RefreshTokenCommandResponseDto } from '../../dtos/response-dtos/refresh-command-response.dto';
 import { CommandResponse } from '../../../shared/generic-class/command-response.class';
 import { CookieService } from '../../../shared/services/cookie.service';
-import { LoginCommandDto } from '../../dtos/login-command.dto';
+import { LoginCommandDto } from '../../dtos/comand-dtos/login-command.dto';
 
 @Controller('IdentityCommand')
 export class IdentityCommandController {

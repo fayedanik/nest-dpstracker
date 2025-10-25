@@ -14,6 +14,10 @@ import { BankAccountMapper } from '../infrastructure/mappers/bank-account.mapper
 import { UpdateAccountCommandHandler } from '../application/handlers/bankAccount/commandHandler/update-account-command.handler';
 import { GetAccountsQueryHandler } from '../application/handlers/bankAccount/queryHandler/get-accounts-query.handler';
 import { BankAccountQueryController } from '../presentation/controllers/bankAccount/bankAccountQuery.controller';
+import { USER_REPOSITORY } from '../application/ports/user-repository.interface';
+import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { UserModule } from './user.module';
+import { DeleteAccountCommandHandler } from '../application/handlers/bankAccount/commandHandler/delete-account-command.handler';
 
 @Module({
   controllers: [BankAccountCommandController, BankAccountQueryController],
@@ -26,11 +30,13 @@ import { BankAccountQueryController } from '../presentation/controllers/bankAcco
         schema: BankAccountSchema,
       },
     ]),
+    UserModule,
   ],
   exports: [],
   providers: [
     AddAccountCommandHandler,
     UpdateAccountCommandHandler,
+    DeleteAccountCommandHandler,
     GetAccountsQueryHandler,
     BankAccountMapper,
     {

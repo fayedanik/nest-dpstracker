@@ -3,6 +3,7 @@ import { IRepository } from './generic-repository.interface';
 
 export interface IBankAccountRepository extends IRepository<BankAccount> {
   addAccount(account: BankAccount): Promise<boolean>;
+  deleteAccount(itemId: string): Promise<boolean>;
   getAccountsByUserId(userId: string): Promise<BankAccount[]>;
 }
 

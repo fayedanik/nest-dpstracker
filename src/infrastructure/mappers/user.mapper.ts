@@ -2,7 +2,9 @@ import { FilterQuery } from 'mongoose';
 import { IMapper } from '../../domain/common/maper.interface';
 import { User } from '../../domain/entities/user.entity';
 import { UserDocument } from '../schemas/user.schema';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UserMapper implements IMapper<User, UserDocument> {
   toDomain(raw: UserDocument): User {
     const { password, ...rest } = raw; // Exclude password from the domain entity

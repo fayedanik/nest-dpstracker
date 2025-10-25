@@ -10,8 +10,6 @@ export class BankAccountMapper
     return {
       ...raw,
       id: raw._id.toString(),
-      accountNo: raw.accountNo,
-      accountHolderUserIds: raw.accountHolderUserIds,
     };
   }
 
@@ -30,7 +28,7 @@ export class BankAccountMapper
     if (domain.id) filter._id = domain.id;
     if (domain.bankId) filter.bankId = domain.bankId;
     if (domain.branchId) filter.branchId = domain.branchId;
-    if (domain.accountHolderUserIds)
+    if (domain.accountHolders)
       filter.accountHolderUserIds = domain.accountHolderUserIds;
     return filter;
   }
@@ -42,8 +40,7 @@ export class BankAccountMapper
     if (domain.branchId) update.branchId = domain.branchId;
     if (domain.branchName) update.branchName = domain.branchName;
     if (domain.bankName) update.bankName = domain.bankName;
-    if (domain.accountHolderUserIds)
-      update.accountHolderUserIds = domain.accountHolderUserIds;
+    if (domain.accountHolders) update.accountHolders = domain.accountHolders;
     if (domain.accountType) update.accountType = domain.accountType;
     return update;
   }

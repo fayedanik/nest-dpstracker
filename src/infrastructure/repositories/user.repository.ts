@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
-import { Model } from 'mongoose';
+import { Model, RootFilterQuery } from 'mongoose';
 import { IUserRepository } from '../../application/ports/user-repository.interface';
 import { User } from '../../domain/entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';
 import { UserDocument } from '../schemas/user.schema';
 import { GenericRepository } from './generic.repository';
+import { GetUsersQuery } from '../../application/queries/get-users.query';
 
 @Injectable()
 export class UserRepository
@@ -21,12 +22,29 @@ export class UserRepository
     super(userModel, userMapper);
   }
 
-  async getUsers(): Promise<User[]> {
+  async getUsers(userIds: string[], query: GetUsersQuery): Promise<User[]> {
     try {
-      const userlist = await this.getItems();
-      return userlist;
+      const filter: RootFilterQuery<UserDocument> = {};
+      if (userIds.length > 0) {
+        filter._id = { $in: userIds };
+      }
+      if (query?.searchText) {
+        const words = query.searchText.trim().split(' ');
+        filter.$and = words.map((word) => ({
+          displayName: { $regex: new RegExp(word, 'i') },
+        }));
+      }
+      let cmd = this.userModel.find(filter);
+      if (query?.pageLimit) {
+        cmd = cmd
+          .limit(query.pageLimit)
+          .skip(query.pageLimit * Math.max(0, (query.pageIndex ?? 0) - 1));
+      }
+      console.log(cmd);
+      const response = await cmd.exec();
+      return response.map((user) => this.userMapper.toDomain(user.toObject()));
     } catch (err) {
-      return [] as User[];
+      return [];
     }
   }
   async getUserPasswordHash(email: string): Promise<string | null> {
@@ -52,7 +70,7 @@ export class UserRepository
         password: passwordHash,
         displayName: user.firstName + ' ' + user.lastName,
       });
-      return savedUser ? true : false;
+      return !!savedUser;
     } catch (error: any) {
       return false;
     }

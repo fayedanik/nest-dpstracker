@@ -1,4 +1,5 @@
 import { FilterQuery } from 'mongoose';
+import { BaseQuery } from '../queries/base.query';
 
 export interface IRepository<T> {
   insert(entity: T): Promise<T | null>;

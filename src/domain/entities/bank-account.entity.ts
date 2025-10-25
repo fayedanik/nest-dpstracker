@@ -2,7 +2,7 @@ import { EntityBase } from './entity-base.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 export class BankAccount extends EntityBase {
-  accountHolderUserIds: string[];
+  accountHolders: AcccountHolder[];
   constructor(
     public accountNo: string,
     public bankName: string,
@@ -12,6 +12,11 @@ export class BankAccount extends EntityBase {
     public accountType: string,
   ) {
     super(uuidv4({}));
-    this.accountHolderUserIds = [];
+    this.accountHolders = [];
   }
+}
+
+export class AcccountHolder {
+  userId: string;
+  displayName: string;
 }

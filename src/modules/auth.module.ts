@@ -29,6 +29,7 @@ import { SecurityQueryController } from '../presentation/controllers/uam/securit
 import { JwtStrategy } from '../shared/strategy';
 import { CoreModule } from './core.module';
 import { SharedModule } from './shared.module';
+import { UserModule } from './user.module';
 @Module({
   controllers: [
     SecurityCommandController,
@@ -38,20 +39,12 @@ import { SharedModule } from './shared.module';
   imports: [
     CoreModule,
     CqrsModule,
-    MongooseModule.forFeature([
-      { name: UserDocument.name, schema: UserSchema },
-      { name: SessionDocument.name, schema: SessionSchema },
-    ]),
     JwtModule.register({}),
     SharedModule,
+    UserModule,
   ],
   exports: [],
   providers: [
-    UserMapper,
-    {
-      provide: USER_REPOSITORY,
-      useClass: UserRepository,
-    },
     {
       provide: AUTH_REPOSITORY,
       useClass: AuthRepository,

@@ -1,5 +1,5 @@
-import { UpdateAccountCommandDto } from '../../presentation/dtos/update-account-command.dto';
-import { BankAccountType } from '../../shared/consts/bankAccountType.const';
+import { UpdateAccountCommandDto } from '../../../presentation/dtos/comand-dtos/update-account-command.dto';
+import { BankAccountType } from '../../../shared/consts/bankAccountType.const';
 
 export class UpdateAccountCommand {
   id: string;
@@ -11,7 +11,7 @@ export class UpdateAccountCommand {
   accountType: BankAccountType;
   userIds: string[];
 
-  constructor(public readonly dto: UpdateAccountCommandDto) {
+  constructor(dto: UpdateAccountCommandDto) {
     this.id = dto.id;
     this.accountNo = dto?.accountNo;
     this.bankName = dto?.bankName;

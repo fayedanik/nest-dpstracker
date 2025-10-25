@@ -13,6 +13,7 @@ export class BankAccountMapper {
       branchName: account.branchName,
       bankId: account.bankId,
       branchId: account.branchId,
+      accountHolders: account.accountHolders,
     };
   }
 }

@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { Role } from '../../../shared/consts/role.const';
 import { Roles } from '../../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
+import { GetUsersQueryDto } from '../../dtos/query-dto/get-users-query.dto';
 
 @Controller('SecurityQuery')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -39,7 +41,8 @@ export class SecurityQueryController {
   @Get('GetUsers')
   @Roles([Role.Admin])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  GetUsers() {
-    return this.queryBus.execute(new GetUsersQuery());
+  GetUsers(@Query() dto: GetUsersQueryDto) {
+    const query = new GetUsersQuery({ ...dto });
+    return this.queryBus.execute(query);
   }
 }

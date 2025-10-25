@@ -22,7 +22,12 @@ export class BankAccountRepository
 
   async getAccountsByUserId(userId: string): Promise<BankAccount[]> {
     try {
-      return await this.getItems({ accountHolderUserIds: userId });
+      const result = await this.bankAccountModel
+        .find({
+          'accountHolders.userId': userId,
+        })
+        .exec();
+      return result.map((x) => this.bankAccountMapper.toDomain(x.toObject()));
     } catch (err) {
       return [];
     }
@@ -31,6 +36,15 @@ export class BankAccountRepository
   async addAccount(account: BankAccount): Promise<boolean> {
     try {
       const res = await this.insert({ ...account });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async deleteAccount(itemId: string): Promise<boolean> {
+    try {
+      const res = await this.bankAccountModel.deleteOne({ _id: itemId }).exec();
       return true;
     } catch (err) {
       return false;

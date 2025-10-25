@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from 'src/application/commands/create-user.command';
-import { CreateUserCommandDto } from '../../dtos/create-user-command.dto';
+import { CreateUserCommandDto } from '../../dtos/comand-dtos/create-user-command.dto';
 
 @Controller('SecurityCommand')
 export class SecurityCommandController {
