@@ -21,7 +21,7 @@ export class BankAccountQueryController {
   @HttpCode(HttpStatus.OK)
   @Get('GetAccounts')
   @Roles([Role.Admin, Role.User])
-  GetAccounts(@Query() query: any) {
+  GetAccounts(@Query() query: GetAccountsQuery) {
     return this.queryBus.execute(new GetAccountsQuery());
   }
 }

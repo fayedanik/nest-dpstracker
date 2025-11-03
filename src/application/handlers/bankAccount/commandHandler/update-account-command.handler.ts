@@ -9,7 +9,7 @@ import {
   type IBankAccountRepository,
 } from '../../../ports/bank-account-repository.interface';
 import { BankAccount } from '../../../../domain/entities/bank-account.entity';
-import { BankAccountType } from '../../../../shared/consts/bankAccountType.const';
+import { BankAccountType } from '../../../../shared/consts/bankAccountType.enum';
 import {
   type IUserRepository,
   USER_REPOSITORY,

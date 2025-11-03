@@ -1,5 +1,5 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { BankAccountType } from '../../../shared/consts/bankAccountType.const';
+import { BankAccountType } from '../../../shared/consts/bankAccountType.enum';
 
 export class AddAccountCommandDto {
   @IsNotEmpty()

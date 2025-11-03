@@ -22,17 +22,17 @@ import { DeleteAccountCommandHandler } from '../application/handlers/bankAccount
 @Module({
   controllers: [BankAccountCommandController, BankAccountQueryController],
   imports: [
-    CoreModule,
     CqrsModule,
+    CoreModule,
+    UserModule,
     MongooseModule.forFeature([
       {
         name: BankAccountDocument.name,
         schema: BankAccountSchema,
       },
     ]),
-    UserModule,
   ],
-  exports: [],
+  exports: [BANK_ACCOUNT_REPOSITORY],
   providers: [
     AddAccountCommandHandler,
     UpdateAccountCommandHandler,

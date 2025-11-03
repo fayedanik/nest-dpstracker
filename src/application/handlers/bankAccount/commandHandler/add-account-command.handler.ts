@@ -8,7 +8,7 @@ import {
 } from '../../../ports/bank-account-repository.interface';
 import { HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { BankAccount } from '../../../../domain/entities/bank-account.entity';
-import { BankAccountType } from '../../../../shared/consts/bankAccountType.const';
+import { BankAccountType } from '../../../../shared/consts/bankAccountType.enum';
 import { ErrorMessageConst } from '../../../../shared/consts/error.const';
 import {
   type IUserRepository,

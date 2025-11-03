@@ -1,6 +1,6 @@
 import { BaseSchema } from './base.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { BankAccountType } from '../../shared/consts/bankAccountType.const';
+import { BankAccountType } from '../../shared/consts/bankAccountType.enum';
 
 export class AccountHolder {
   @Prop({ type: String, required: true })

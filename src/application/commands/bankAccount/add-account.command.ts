@@ -1,4 +1,4 @@
-import { BankAccountType } from '../../../shared/consts/bankAccountType.const';
+import { BankAccountType } from '../../../shared/consts/bankAccountType.enum';
 
 export class AddAccountCommand {
   constructor(
