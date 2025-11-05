@@ -14,6 +14,8 @@ export class DpsDocument extends BaseSchema {
   @Prop({ type: [DpsOwners], required: true, default: [] })
   dpsOwners: DpsOwners[];
   @Prop({ type: String, required: true })
+  dpsName: string;
+  @Prop({ type: String, required: true })
   accountNumber: string;
   @Prop({ type: Number, required: true })
   monthlyDeposit: number;

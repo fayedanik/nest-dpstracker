@@ -10,6 +10,10 @@ import { Type } from 'class-transformer';
 export class AddDpsCommandDto {
   @IsNotEmpty()
   @IsString()
+  dpsName: string;
+
+  @IsNotEmpty()
+  @IsString()
   accountNumber: string;
 
   @IsNotEmpty()

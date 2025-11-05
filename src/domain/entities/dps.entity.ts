@@ -4,6 +4,7 @@ export class Dps extends EntityBase {
   status: string;
   dpsOwners: DpsOwners[];
   constructor(
+    public dpsName: string,
     public accountNumber: string,
     public monthlyDeposit: number,
     public durationMonths: number,

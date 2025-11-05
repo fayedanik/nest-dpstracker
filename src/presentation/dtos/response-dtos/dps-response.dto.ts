@@ -1,5 +1,6 @@
 export interface DpsResponseDto {
   id: string;
+  dpsName: string;
   accountNo: string;
   monthlyAmount: number;
   durationMonths: number;

@@ -40,7 +40,6 @@ export class UserRepository
           .limit(query.pageLimit)
           .skip(query.pageLimit * Math.max(0, (query.pageIndex ?? 0) - 1));
       }
-      console.log(cmd);
       const response = await cmd.exec();
       return response.map((user) => this.userMapper.toDomain(user.toObject()));
     } catch (err) {

@@ -46,7 +46,6 @@ export class DpsRepository
         .exec();
       return response.map((dps) => this.dpsMapper.toDomain(dps.toObject()));
     } catch (err) {
-      console.log(err);
       return [];
     }
   }

@@ -11,8 +11,8 @@ import { CoreModule } from './core.module';
 import { DpsMapper } from '../infrastructure/mappers/dps.mapper';
 import { BankAccountModule } from './bankAccount.module';
 import { AddDpsCommandHandler } from '../application/handlers/dps/commandHandler/add-dps-command.handler';
-import { DeleteAccountCommandHandler } from '../application/handlers/bankAccount/commandHandler/delete-account-command.handler';
 import { GetDpsQueryHandler } from '../application/handlers/dps/queryHandler/get-dps-query.handler';
+import { DeleteDpsCommandHandler } from '../application/handlers/dps/commandHandler/delete-dps-command.handler';
 
 @Module({
   controllers: [DpsCommandController, DpsQueryController],
@@ -31,7 +31,7 @@ import { GetDpsQueryHandler } from '../application/handlers/dps/queryHandler/get
   exports: [],
   providers: [
     AddDpsCommandHandler,
-    DeleteAccountCommandHandler,
+    DeleteDpsCommandHandler,
     GetDpsQueryHandler,
     DpsMapper,
     {

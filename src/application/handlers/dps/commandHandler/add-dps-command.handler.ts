@@ -53,6 +53,7 @@ export class AddDpsCommandHandler
       }
       const ownerUsers = await this.userRepository.getUsers(command.dpsOwners);
       const dps = new Dps(
+        command.dpsName,
         command.accountNumber,
         command.monthlyDeposit,
         command.durationMonths,

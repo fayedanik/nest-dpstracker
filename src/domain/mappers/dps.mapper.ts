@@ -7,6 +7,7 @@ export class DpsMapper {
   public static toDto(dps: Dps): DpsResponseDto {
     return {
       id: dps.id,
+      dpsName: dps.dpsName,
       accountNo: dps.accountNumber,
       monthlyAmount: dps.monthlyDeposit,
       durationMonths: dps.durationMonths,

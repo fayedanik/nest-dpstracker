@@ -26,6 +26,7 @@ export class DpsCommandController {
   @Roles([Role.Admin, Role.User])
   public CreateDps(@Body() dto: AddDpsCommandDto) {
     const command = new AddDpsCommand(
+      dto.dpsName,
       dto.accountNumber,
       dto.monthlyDeposit,
       dto.durationMonths,
@@ -42,7 +43,7 @@ export class DpsCommandController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.Admin, Role.User])
   public DeleteDps(@Body() dto: DeleteDpsCommandDto) {
-    const command = new DeleteDpsCommand(dto.Id);
+    const command = new DeleteDpsCommand(dto.id);
     return this.commandBus.execute(command);
   }
 }
