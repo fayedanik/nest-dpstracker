@@ -3,9 +3,11 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Optional } from '@nestjs/common';
 
 export class UpdateAccountCommandDto {
   @IsString()
@@ -33,4 +35,8 @@ export class UpdateAccountCommandDto {
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   userIds: string[];
+
+  @IsOptional()
+  @IsNumber()
+  balance: number;
 }

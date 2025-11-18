@@ -12,7 +12,7 @@ export class UserMapper implements IMapper<User, UserDocument> {
       id: raw._id.toString(),
       password: null,
       ...rest,
-    };
+    } as unknown as User;
   }
 
   toPersistence(domain: User): UserDocument {
@@ -36,6 +36,7 @@ export class UserMapper implements IMapper<User, UserDocument> {
     const update: Partial<UserDocument> = {};
     if (domain.email) update.email = domain.email;
     if (domain.password) update.password = domain.password;
+    if (domain.lastUpdatedBy) update.lastUpdatedBy = domain.lastUpdatedBy;
     return update;
   }
 }

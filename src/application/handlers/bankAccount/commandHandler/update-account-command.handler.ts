@@ -37,9 +37,15 @@ export class UpdateAccountCommandHandler
       if (!account) {
         return CommandResponse.failure(ErrorMessageConst.INVALID_ID);
       }
-      const accountHolderIds = [
-        ...new Set([...(command.userIds ?? []), securityContext.userId]),
-      ];
+      if (!account.idsAllowedToUpdate?.includes(securityContext.userId)) {
+        return CommandResponse.failure(ErrorMessageConst.FORBIDDEN);
+      }
+      let accountHolderIds: string[] = [securityContext.userId];
+      if (account.accountType != BankAccountType.Personal) {
+        accountHolderIds = [
+          ...new Set([...(command.userIds ?? []), securityContext.userId]),
+        ];
+      }
       const accountHolderUsers =
         await this.userRepository.getUsers(accountHolderIds);
       const accountHolders = accountHolderUsers.map((x) => ({
@@ -49,7 +55,13 @@ export class UpdateAccountCommandHandler
       const update = {
         ...command,
         accountHolders: accountHolders,
-      };
+        idsAllowedToRead: accountHolderIds,
+        availableBalance:
+          (account?.availableBalance ?? 0) +
+          (account.accountType == BankAccountType.Personal
+            ? Math.max(0, command.balance)
+            : 0),
+      } as Partial<BankAccount>;
       await this.bankAccountRepository.update(account.id, update);
       return CommandResponse.success();
     } catch (err) {

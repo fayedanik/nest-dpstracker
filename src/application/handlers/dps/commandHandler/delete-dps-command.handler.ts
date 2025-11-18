@@ -8,6 +8,7 @@ import {
   type IDpsRepository,
 } from '../../../ports/dps.interface';
 import { ErrorMessageConst } from '../../../../shared/consts/error.const';
+import { Role } from '../../../../shared/consts/role.const';
 
 @CommandHandler(DeleteDpsCommand)
 export class DeleteDpsCommandHandler
@@ -20,6 +21,17 @@ export class DeleteDpsCommandHandler
   ) {}
   async execute(command: DeleteDpsCommand): Promise<CommandResponse<boolean>> {
     try {
+      const securityContext = this.securityContextProvider.getSecurityContext();
+      const dps = await this.dpsRepository.getItem({ id: command.id });
+      if (!dps) {
+        return CommandResponse.failure(ErrorMessageConst.CONTENT_NOT_FOUND);
+      }
+      if (
+        !securityContext.roles.includes(Role.Admin) ||
+        !dps.idsAllowedToDelete?.includes(securityContext.userId)
+      ) {
+        return CommandResponse.failure(ErrorMessageConst.FORBIDDEN);
+      }
       const response = await this.dpsRepository.deleteDps(command.id);
       return CommandResponse.success(response);
     } catch (error) {

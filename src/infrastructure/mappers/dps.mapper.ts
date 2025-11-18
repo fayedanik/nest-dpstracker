@@ -8,7 +8,8 @@ export class DpsMapper implements IMapper<Dps, DpsDocument> {
     return {
       ...raw,
       id: raw._id.toString(),
-    };
+      dpsOwners: raw.dpsOwners ?? [],
+    } as unknown as Dps;
   }
 
   toPersistence(domain: Dps): DpsDocument {
@@ -23,13 +24,19 @@ export class DpsMapper implements IMapper<Dps, DpsDocument> {
   ): FilterQuery<Partial<DpsDocument>> {
     const filter: FilterQuery<Partial<DpsDocument>> = {};
     if (!domain) return filter;
-
+    if (domain.id) filter._id = domain.id;
     return filter;
     //return undefined;
   }
 
   toPersistUpdate(domain: Partial<Dps>): Partial<DpsDocument> {
     const update: Partial<DpsDocument> = {};
+    if (domain.lastUpdatedBy) {
+      update.lastUpdatedBy = domain.lastUpdatedBy;
+    }
+    if (domain.dpsOwners) {
+      update.dpsOwners = domain.dpsOwners;
+    }
     return update;
   }
 }

@@ -15,7 +15,7 @@ import { Role } from '../../../shared/consts/role.const';
 import { Roles } from '../../../shared/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
-import { GetUsersQueryDto } from '../../dtos/query-dto/get-users-query.dto';
+import { GetUsersQueryDto } from '../../dtos/query-dtos/get-users-query.dto';
 
 @Controller('SecurityQuery')
 @UseGuards(JwtAuthGuard, RolesGuard)

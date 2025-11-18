@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DpsDocument } from '../schemas/dps.schema';
 import { DpsMapper } from '../mappers/dps.mapper';
+import { SecurityContextProvider } from '../../core/SecurityContext/security-context-provider.service';
 
 @Injectable()
 export class DpsRepository
@@ -17,13 +18,14 @@ export class DpsRepository
     @InjectModel(DpsDocument.name)
     private readonly dpsModel: Model<DpsDocument>,
     private readonly dpsMapper: DpsMapper,
+    protected readonly securityContextProvider: SecurityContextProvider,
   ) {
-    super(dpsModel, dpsMapper);
+    super(dpsModel, dpsMapper, securityContextProvider);
   }
 
   async addDps(dps: Dps): Promise<boolean> {
     try {
-      const res = await this.insert({ ...dps });
+      const res = await this.insert(dps);
       return true;
     } catch (err) {
       return false;

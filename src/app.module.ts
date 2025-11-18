@@ -7,6 +7,8 @@ import { IAppConfig } from './shared/interfaces/app-config.interface';
 import { AdminCommandController } from './presentation/controllers/adminCommand.controller';
 import { BankAccountModule } from './modules/bankAccount.module';
 import { DpsModule } from './modules/dps.module';
+import { TransactionModule } from './modules/transaction.module';
+import { DashboardModule } from './modules/dashboard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +26,8 @@ import { DpsModule } from './modules/dps.module';
     AuthModule,
     BankAccountModule,
     DpsModule,
+    TransactionModule,
+    DashboardModule,
   ],
   exports: [],
   controllers: [AdminCommandController],

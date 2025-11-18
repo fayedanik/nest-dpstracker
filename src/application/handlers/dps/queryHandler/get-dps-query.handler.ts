@@ -9,6 +9,8 @@ import { Inject } from '@nestjs/common';
 import { QueryResponse } from '../../../../shared/generic-class/query-response.class';
 import { DpsResponseDto } from '../../../../presentation/dtos/response-dtos/dps-response.dto';
 import { DpsMapper } from '../../../../domain/mappers/dps.mapper';
+import { Roles } from '../../../../shared/decorators/roles.decorator';
+import { Role } from '../../../../shared/consts/role.const';
 
 @QueryHandler(GetDpsQuery)
 export class GetDpsQueryHandler implements IQueryHandler<GetDpsQuery> {
@@ -20,14 +22,15 @@ export class GetDpsQueryHandler implements IQueryHandler<GetDpsQuery> {
   async execute(query: GetDpsQuery): Promise<QueryResponse<DpsResponseDto[]>> {
     try {
       const securityContext = this.securityContextProvider.getSecurityContext();
-      console.log(securityContext);
+      const isAdmin = securityContext.roles.includes(Role.Admin);
       const response = await this.dpsRepository.getDpsListByUserId(
         securityContext.userId,
       );
-      const dto = response.map((dps) => DpsMapper.toDto(dps));
+      const dto = response.map((dps) =>
+        DpsMapper.toDto(dps, securityContext.userId, isAdmin),
+      );
       return QueryResponse.success(dto);
     } catch (err) {
-      console.log(err);
       return QueryResponse.failure();
     }
   }

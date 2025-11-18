@@ -7,6 +7,10 @@ export class DpsOwners {
   userId: string;
   @Prop({ type: String, required: true })
   displayName: string;
+  @Prop({ type: Number, required: true, default: 0 })
+  amountPaid: number;
+  @Prop({ type: [Date], required: true, default: [] })
+  installmentDates: Date[];
 }
 
 @Schema({ collection: 'dpsSchemes', timestamps: true, versionKey: false })

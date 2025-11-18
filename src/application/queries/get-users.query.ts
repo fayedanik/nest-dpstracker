@@ -1,5 +1,5 @@
 import { BaseQuery } from './base.query';
-import { GetUsersQueryDto } from '../../presentation/dtos/query-dto/get-users-query.dto';
+import { GetUsersQueryDto } from '../../presentation/dtos/query-dtos/get-users-query.dto';
 
 export class GetUsersQuery extends BaseQuery {
   constructor(dto: GetUsersQueryDto) {

@@ -10,6 +10,7 @@ import { BankAccountMapper } from '../../../../domain/mappers/bank-account.mappe
 import { BankAccountsResponseDto } from '../../../../presentation/dtos/response-dtos/bank-accounts-response.dto';
 import { QueryResponse } from '../../../../shared/generic-class/query-response.class';
 import { UserResponseDto } from '../../../../presentation/dtos/response-dtos/user-response.dto';
+import { Role } from '../../../../shared/consts/role.const';
 
 @QueryHandler(GetAccountsQuery)
 export class GetAccountsQueryHandler
@@ -25,10 +26,13 @@ export class GetAccountsQueryHandler
   ): Promise<QueryResponse<BankAccountsResponseDto[]>> {
     try {
       const securityContext = this.securityContextProvider.getSecurityContext();
+      const isAdmin = securityContext.roles.includes(Role.Admin);
       const response = await this.bankAccountRepository.getAccountsByUserId(
         securityContext.userId,
       );
-      const dto = response.map((account) => BankAccountMapper.toDto(account));
+      const dto = response.map((account) =>
+        BankAccountMapper.toDto(account, securityContext.userId, isAdmin),
+      );
       return QueryResponse.success(dto);
     } catch (err) {
       return QueryResponse.failure();

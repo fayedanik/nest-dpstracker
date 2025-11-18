@@ -13,6 +13,8 @@ import { BankAccountModule } from './bankAccount.module';
 import { AddDpsCommandHandler } from '../application/handlers/dps/commandHandler/add-dps-command.handler';
 import { GetDpsQueryHandler } from '../application/handlers/dps/queryHandler/get-dps-query.handler';
 import { DeleteDpsCommandHandler } from '../application/handlers/dps/commandHandler/delete-dps-command.handler';
+import { GetDpsByIdQueryHandler } from '../application/handlers/dps/queryHandler/get-dps-by-id-query.handler';
+import { UpdateDpsCommandHandler } from '../application/handlers/dps/commandHandler/update-dps-command.handler';
 
 @Module({
   controllers: [DpsCommandController, DpsQueryController],
@@ -28,11 +30,13 @@ import { DeleteDpsCommandHandler } from '../application/handlers/dps/commandHand
       },
     ]),
   ],
-  exports: [],
+  exports: [DPS_REPOSITORY],
   providers: [
     AddDpsCommandHandler,
+    UpdateDpsCommandHandler,
     DeleteDpsCommandHandler,
     GetDpsQueryHandler,
+    GetDpsByIdQueryHandler,
     DpsMapper,
     {
       provide: DPS_REPOSITORY,

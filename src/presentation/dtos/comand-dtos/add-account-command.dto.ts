@@ -1,4 +1,11 @@
-import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BankAccountType } from '../../../shared/consts/bankAccountType.enum';
 
 export class AddAccountCommandDto {
@@ -31,4 +38,8 @@ export class AddAccountCommandDto {
   @IsString({ each: true })
   @IsNotEmpty({ each: true })
   userIds: string[];
+
+  @IsOptional()
+  @IsNumber()
+  balance: number = 0;
 }

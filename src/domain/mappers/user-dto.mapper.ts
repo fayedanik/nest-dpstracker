@@ -17,6 +17,7 @@ export class UserDtoMapper {
       roles: user.roles,
       createdAt: user.createdAt?.toString(),
       isActive: user.isActive,
+      activationDate: user.activationDate,
     };
   }
 }

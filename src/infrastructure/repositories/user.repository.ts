@@ -8,6 +8,8 @@ import { UserMapper } from '../mappers/user.mapper';
 import { UserDocument } from '../schemas/user.schema';
 import { GenericRepository } from './generic.repository';
 import { GetUsersQuery } from '../../application/queries/get-users.query';
+import { SecurityContextProvider } from '../../core/SecurityContext/security-context-provider.service';
+import { Role } from '../../shared/consts/role.const';
 
 @Injectable()
 export class UserRepository
@@ -18,8 +20,9 @@ export class UserRepository
     @InjectModel(UserDocument.name)
     private readonly userModel: Model<UserDocument>,
     private readonly userMapper: UserMapper,
+    protected readonly securityContextProvider: SecurityContextProvider,
   ) {
-    super(userModel, userMapper);
+    super(userModel, userMapper, securityContextProvider);
   }
 
   async getUsers(userIds: string[], query: GetUsersQuery): Promise<User[]> {
@@ -68,9 +71,30 @@ export class UserRepository
         ...user,
         password: passwordHash,
         displayName: user.firstName + ' ' + user.lastName,
-      });
+        createdBy: user.id,
+        idsAllowedToRead: [user.id],
+        idsAllowedToUpdate: [user.id],
+        idsAllowedToDelete: [user.id],
+        rolesAllowedToRead: [Role.Admin, Role.SuperAdmin],
+        rolesAllowedToUpdate: [Role.Admin, Role.SuperAdmin],
+        rolesAllowedToDelete: [Role.Admin, Role.SuperAdmin],
+      } as User);
       return !!savedUser;
     } catch (error: any) {
+      return false;
+    }
+  }
+
+  async activateUser(userId: string): Promise<boolean> {
+    try {
+      const response = await this.userModel
+        .findByIdAndUpdate(userId, {
+          isActive: true,
+          activationDate: Date.now(),
+        })
+        .exec();
+      return !!response;
+    } catch (e) {
       return false;
     }
   }

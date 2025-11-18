@@ -4,7 +4,11 @@ import { DpsResponseDto } from '../../presentation/dtos/response-dtos/dps-respon
 
 @Injectable()
 export class DpsMapper {
-  public static toDto(dps: Dps): DpsResponseDto {
+  public static toDto(
+    dps: Dps,
+    loggedInUserId: string,
+    isAdmin: boolean,
+  ): DpsResponseDto {
     return {
       id: dps.id,
       dpsName: dps.dpsName,
@@ -15,6 +19,8 @@ export class DpsMapper {
       maturityDate: dps.maturityDate,
       interestRate: dps.interestRate,
       dpsOwners: dps.dpsOwners,
+      canUpdate: dps.idsAllowedToUpdate?.includes(loggedInUserId) ?? isAdmin,
+      canDelete: dps.idsAllowedToDelete?.includes(loggedInUserId) ?? isAdmin,
     };
   }
 }

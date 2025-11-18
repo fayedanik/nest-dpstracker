@@ -29,9 +29,12 @@ export class AddAccountCommandHandler
   async execute(command: AddAccountCommand): Promise<CommandResponse<boolean>> {
     try {
       const securityContext = this.securityContextProvider.getSecurityContext();
-      const accountHolderIds = [
+      let accountHolderIds = [
         ...new Set([...(command.userIds ?? []), securityContext.userId]),
       ];
+      if (command.accountType == BankAccountType.Personal) {
+        accountHolderIds = [securityContext.userId];
+      }
       const account = new BankAccount(
         command.accountNo,
         command.bankName,
@@ -39,7 +42,10 @@ export class AddAccountCommandHandler
         command.branchName,
         command.branchId,
         command.accountType,
+        command.amount,
       );
+      account.addPdsInfo(securityContext.userId);
+      account.idsAllowedToRead = accountHolderIds;
       account.accountHolders = (
         await this.userRepository.getUsers(accountHolderIds)
       ).map((x) => ({ userId: x.id, displayName: x.displayName }));

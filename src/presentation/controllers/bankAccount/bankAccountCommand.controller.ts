@@ -34,6 +34,7 @@ export class BankAccountCommandController {
       dto.branchId,
       dto.accountType,
       dto.userIds,
+      dto.balance,
     );
     return this.commandBus.execute(command);
   }

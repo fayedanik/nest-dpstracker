@@ -4,7 +4,11 @@ import { BankAccountsResponseDto } from '../../presentation/dtos/response-dtos/b
 
 @Injectable()
 export class BankAccountMapper {
-  public static toDto(account: BankAccount): BankAccountsResponseDto {
+  public static toDto(
+    account: BankAccount,
+    loggedInUserId: string,
+    isAdmin: boolean,
+  ): BankAccountsResponseDto {
     return {
       id: account.id,
       accountNo: account.accountNo,
@@ -14,6 +18,11 @@ export class BankAccountMapper {
       bankId: account.bankId,
       branchId: account.branchId,
       accountHolders: account.accountHolders,
+      balance: account.availableBalance,
+      canUpdate:
+        account.idsAllowedToUpdate?.includes(loggedInUserId) ?? isAdmin,
+      canDelete:
+        account.idsAllowedToDelete?.includes(loggedInUserId) ?? isAdmin,
     };
   }
 }

@@ -27,15 +27,17 @@ export class BankAccountDocument extends BaseSchema {
   branchId: string;
 
   @Prop({
-    type: String,
     required: true,
     enum: Object.values(BankAccountType),
     default: BankAccountType.Personal,
   })
-  accountType: string;
+  accountType: BankAccountType;
 
   @Prop({ type: [AccountHolder], required: true })
   accountHolders: AccountHolder[];
+
+  @Prop({ required: true, default: 0 })
+  availableBalance: number;
 }
 
 export const BankAccountSchema =

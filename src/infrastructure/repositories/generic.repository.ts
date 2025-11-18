@@ -1,6 +1,7 @@
-import { Document, FilterQuery, Model } from 'mongoose';
+import { Document, FilterQuery, Model, SortOrder } from 'mongoose';
 import { IRepository } from 'src/application/ports/generic-repository.interface';
 import { IMapper } from '../../domain/common/maper.interface';
+import { SecurityContextProvider } from '../../core/SecurityContext/security-context-provider.service';
 
 export class GenericRepository<TDomain, TPersist extends Document>
   implements IRepository<TDomain>
@@ -8,6 +9,7 @@ export class GenericRepository<TDomain, TPersist extends Document>
   constructor(
     private readonly model: Model<TPersist>,
     private readonly mapper: IMapper<TDomain, TPersist>,
+    protected readonly securityContextProvider: SecurityContextProvider,
   ) {}
 
   async insert(entity: TDomain): Promise<TDomain | null> {
@@ -27,11 +29,31 @@ export class GenericRepository<TDomain, TPersist extends Document>
     return doc ? this.mapper.toDomain(doc.toObject()) : null;
   }
 
-  async getItems(filter?: FilterQuery<TDomain>): Promise<TDomain[]> {
+  async getItems(
+    filter?: FilterQuery<TDomain>,
+    sort: { [key: string]: SortOrder } = {},
+    pageIndex = 0,
+    pageLimit = 100,
+  ): Promise<TDomain[]> {
+    const persistFilter = this.mapper.toPersistFilter(filter);
+    const securityContext = this.securityContextProvider.getSecurityContext();
+    persistFilter.$or = [
+      { rolesAllowedToRead: { $in: securityContext.roles } },
+      { idsAllowedToRead: { $in: [securityContext.userId] } },
+    ];
     const doc = await this.model
-      .find(this.mapper.toPersistFilter(filter))
+      .find(persistFilter)
+      .sort(sort)
+      .skip(Math.max(pageIndex - 1, 0) * pageLimit)
+      .limit(pageLimit)
       .exec();
     return doc.map((d) => this.mapper.toDomain(d.toObject())) ?? [];
+  }
+
+  async getCount(filter?: FilterQuery<TDomain>): Promise<number> {
+    return await this.model
+      .countDocuments(this.mapper.toPersistFilter(filter))
+      .exec();
   }
 
   async update(id: string, entity: Partial<TDomain>): Promise<TDomain | null> {

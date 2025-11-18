@@ -22,12 +22,14 @@ export class GetUsersQueryHandler
   ): Promise<QueryResponse<GetUserResponseDto>> {
     try {
       const users = await this.userRepository.getUsers([], query);
+      const total = await this.userRepository.getCount();
       const response: GetUserResponseDto = {
         users: users.map((user) => {
           return UserDtoMapper.toDto(user);
         }),
       };
-      return QueryResponse.success(response);
+
+      return QueryResponse.success(response, 'success', total);
     } catch (err) {
       return QueryResponse.failure();
     }

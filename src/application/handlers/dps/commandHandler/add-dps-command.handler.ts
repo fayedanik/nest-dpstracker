@@ -18,6 +18,7 @@ import {
 } from '../../../ports/bank-account-repository.interface';
 import { ErrorMessageConst } from '../../../../shared/consts/error.const';
 import { Dps } from '../../../../domain/entities/dps.entity';
+import { BankAccountType } from '../../../../shared/consts/bankAccountType.enum';
 
 @CommandHandler(AddDpsCommand)
 export class AddDpsCommandHandler
@@ -38,11 +39,9 @@ export class AddDpsCommandHandler
       const bankAccount = await this.bankAccountRepository.getItem({
         accountNo: command.accountNumber,
       });
-      console.log(bankAccount);
       if (!bankAccount) {
         return CommandResponse.failure(ErrorMessageConst.CONTENT_NOT_FOUND);
       }
-
       const isAllValidOwners = command.dpsOwners.every((owner) =>
         bankAccount.accountHolders.some(
           (accountHolder) => accountHolder.userId == owner,
@@ -50,6 +49,9 @@ export class AddDpsCommandHandler
       );
       if (!isAllValidOwners) {
         return CommandResponse.failure(ErrorMessageConst.INVALID_ACCOUNT_OWNER);
+      }
+      if (bankAccount.accountType == BankAccountType.Personal) {
+        command.dpsOwners = [securityContext.userId];
       }
       const ownerUsers = await this.userRepository.getUsers(command.dpsOwners);
       const dps = new Dps(
@@ -62,11 +64,14 @@ export class AddDpsCommandHandler
         command.interestRate,
         command.monthlyDeposit,
       );
+      dps.addPdsInfo(securityContext.userId);
+      dps.idsAllowedToRead = command.dpsOwners;
       dps.dpsOwners = ownerUsers.map((owner) => ({
         userId: owner.id,
         displayName: owner.displayName,
+        amountPaid: 0,
+        installmentDates: [],
       }));
-
       await this.dpsRepository.addDps(dps);
       return CommandResponse.success();
     } catch (err) {

@@ -4,6 +4,7 @@ import { EntityBase } from './entity-base.entity';
 export class User extends EntityBase {
   displayName: string;
   isActive: boolean;
+  activationDate: Date | null;
   constructor(
     public email: string,
     public firstName: string,

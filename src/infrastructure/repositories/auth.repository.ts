@@ -74,7 +74,6 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async terminateSession(userId: string): Promise<boolean> {
-    console.log(userId);
     const session = await this.sessionModel.findOneAndDelete({
       userId: userId,
     });

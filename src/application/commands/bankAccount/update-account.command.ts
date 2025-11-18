@@ -10,7 +10,7 @@ export class UpdateAccountCommand {
   branchId: string;
   accountType: BankAccountType;
   userIds: string[];
-
+  balance: number;
   constructor(dto: UpdateAccountCommandDto) {
     this.id = dto.id;
     this.accountNo = dto?.accountNo;
@@ -20,5 +20,6 @@ export class UpdateAccountCommand {
     this.branchId = dto?.branchId;
     this.accountType = dto?.accountType;
     this.userIds = dto?.userIds;
+    this.balance = dto?.balance ?? 0;
   }
 }

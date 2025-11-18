@@ -10,5 +10,9 @@ export interface DpsResponseDto {
   dpsOwners: {
     userId: string;
     displayName: string;
+    amountPaid: number;
+    installmentDates: Date[];
   }[];
+  canUpdate: boolean;
+  canDelete: boolean;
 }

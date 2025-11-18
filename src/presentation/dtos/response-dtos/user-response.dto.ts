@@ -8,4 +8,5 @@ export interface UserResponseDto {
   roles: string[];
   createdAt?: Date | string | null;
   isActive: boolean;
+  activationDate?: Date | null;
 }

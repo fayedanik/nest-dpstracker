@@ -15,6 +15,8 @@ import { AddDpsCommandDto } from '../../dtos/comand-dtos/add-dps-command.dto';
 import { AddDpsCommand } from '../../../application/commands/dps/add-dps.command';
 import { DeleteDpsCommandDto } from '../../dtos/comand-dtos/delete-dps-command.dto';
 import { DeleteDpsCommand } from '../../../application/commands/dps/delete-dps.command';
+import { UpdateDpsCommandDto } from '../../dtos/comand-dtos/update-dps-command.dto';
+import { UpdateDpsCommand } from '../../../application/commands/dps/update-dps.command';
 
 @Controller('DpsCommand')
 export class DpsCommandController {
@@ -34,6 +36,19 @@ export class DpsCommandController {
       dto.maturityDate,
       dto.interestRate,
       dto.dpsOwners,
+    );
+    return this.commandBus.execute(command);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('UpdateDps')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.Admin, Role.User])
+  public UpdateDps(@Body() dto: UpdateDpsCommandDto) {
+    const command = new UpdateDpsCommand(
+      dto.dpsId,
+      dto.ownerId,
+      dto.paymentDate,
     );
     return this.commandBus.execute(command);
   }

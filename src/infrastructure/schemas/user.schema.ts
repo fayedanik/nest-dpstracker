@@ -52,6 +52,9 @@ export class UserDocument extends BaseSchema {
 
   @Prop({ type: Date, default: null })
   passwordResetExpires: Date | null;
+
+  @Prop({ type: Date })
+  activationDate: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserDocument);

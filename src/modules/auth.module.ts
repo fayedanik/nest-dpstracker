@@ -10,19 +10,7 @@ import { LogoutCommandHandler } from '../application/handlers/log-out-command.ha
 import { LoginCommandHandler } from '../application/handlers/login-command.handler';
 import { RefreshTokenCommandHandler } from '../application/handlers/refresh-token-command.handler';
 import { AUTH_REPOSITORY } from '../application/ports/auth-repository.interface';
-import { USER_REPOSITORY } from '../application/ports/user-repository.interface';
-import { UserMapper } from '../infrastructure/mappers/user.mapper';
 import { AuthRepository } from '../infrastructure/repositories/auth.repository';
-import { UserRepository } from '../infrastructure/repositories/user.repository';
-import {
-  Session,
-  SessionDocument,
-  SessionSchema,
-} from '../infrastructure/schemas/session.schema';
-import {
-  UserDocument,
-  UserSchema,
-} from '../infrastructure/schemas/user.schema';
 import { IdentityCommandController } from '../presentation/controllers/iam/authenticationCommand.controller';
 import { SecurityCommandController } from '../presentation/controllers/uam/securitCommand.controller';
 import { SecurityQueryController } from '../presentation/controllers/uam/securityQuery.controller';
@@ -30,6 +18,7 @@ import { JwtStrategy } from '../shared/strategy';
 import { CoreModule } from './core.module';
 import { SharedModule } from './shared.module';
 import { UserModule } from './user.module';
+import { ActivateUserCommandHandler } from '../application/handlers/activate-user-command.handler';
 @Module({
   controllers: [
     SecurityCommandController,
@@ -50,6 +39,7 @@ import { UserModule } from './user.module';
       useClass: AuthRepository,
     },
     CreatUserCommandHandler,
+    ActivateUserCommandHandler,
     LoginCommandHandler,
     LogoutCommandHandler,
     RefreshTokenCommandHandler,

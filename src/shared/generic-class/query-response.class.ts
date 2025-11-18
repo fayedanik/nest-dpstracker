@@ -6,10 +6,15 @@ export class QueryResponse<T> {
     public readonly success: boolean,
     public readonly data: T | null,
     public readonly errors?: any,
+    public readonly totalCount: number = 0,
   ) {}
 
-  static success<T>(data: T, message = 'Success'): QueryResponse<T> {
-    return new QueryResponse<T>(message, true, data);
+  static success<T>(
+    data: T,
+    message = 'Success',
+    totalCount = 0,
+  ): QueryResponse<T> {
+    return new QueryResponse<T>(message, true, data, null, totalCount);
   }
 
   static failure<T>(

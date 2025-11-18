@@ -5,6 +5,7 @@ import { GetUsersQuery } from '../queries/get-users.query';
 
 export interface IUserRepository extends IRepository<User> {
   save(user: User): Promise<boolean>;
+  activateUser(userId: string): Promise<boolean>;
   getUserPasswordHash(email: string): Promise<string | null>;
   getUsers(userIds: string[], query?: GetUsersQuery): Promise<User[]>;
 }

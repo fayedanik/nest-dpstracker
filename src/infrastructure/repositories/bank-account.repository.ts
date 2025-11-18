@@ -6,6 +6,7 @@ import { Model, Promise } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BankAccountMapper } from '../mappers/bank-account.mapper';
+import { SecurityContextProvider } from '../../core/SecurityContext/security-context-provider.service';
 
 @Injectable()
 export class BankAccountRepository
@@ -16,8 +17,9 @@ export class BankAccountRepository
     @InjectModel(BankAccountDocument.name)
     private readonly bankAccountModel: Model<BankAccountDocument>,
     private readonly bankAccountMapper: BankAccountMapper,
+    protected readonly securityContextProvider: SecurityContextProvider,
   ) {
-    super(bankAccountModel, bankAccountMapper);
+    super(bankAccountModel, bankAccountMapper, securityContextProvider);
   }
 
   async getAccountsByUserId(userId: string): Promise<BankAccount[]> {
@@ -35,7 +37,7 @@ export class BankAccountRepository
 
   async addAccount(account: BankAccount): Promise<boolean> {
     try {
-      const res = await this.insert({ ...account });
+      const res = await this.insert(account);
       return true;
     } catch (err) {
       return false;

@@ -1,5 +1,6 @@
 import { EntityBase } from './entity-base.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
+import { Prop } from '@nestjs/mongoose';
 export class Dps extends EntityBase {
   status: string;
   dpsOwners: DpsOwners[];
@@ -13,11 +14,13 @@ export class Dps extends EntityBase {
     public interestRate: number,
     public totalDeposit: number,
   ) {
-    super(uuidv4({}));
+    super(randomUUID());
   }
 }
 
 export class DpsOwners {
   userId: string;
   displayName: string;
+  amountPaid: number = 0;
+  installmentDates: Date[] = [];
 }

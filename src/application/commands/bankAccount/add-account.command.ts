@@ -9,5 +9,6 @@ export class AddAccountCommand {
     public readonly branchId: string,
     public readonly accountType: BankAccountType,
     public readonly userIds: string[],
+    public readonly amount: number,
   ) {}
 }

@@ -10,4 +10,7 @@ export interface BankAccountsResponseDto {
     userId: string;
     displayName: string;
   }[];
+  balance: number;
+  canUpdate: boolean;
+  canDelete: boolean;
 }
