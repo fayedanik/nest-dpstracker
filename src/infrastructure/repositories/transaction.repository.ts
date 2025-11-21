@@ -45,7 +45,7 @@ export class TransactionRepository
   async addTransaction(transaction: Transaction): Promise<boolean> {
     try {
       const res = await this.insert(transaction);
-      return true;
+      return !!res;
     } catch (e) {
       console.log(e);
       return false;

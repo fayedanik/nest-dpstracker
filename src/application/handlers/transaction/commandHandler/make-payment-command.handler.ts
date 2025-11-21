@@ -65,9 +65,11 @@ export class MakePaymentCommandHandler
       if (sourceAccount.availableBalance < command.amount) {
         return CommandResponse.failure(ErrorMessageConst.NOT_ENOUGH_BALANCE);
       }
-      const isAdmin = securityContext.roles.some(
-        (x) => x == Role.Admin.toString(),
-      );
+      const canUpdate =
+        securityContext.roles.some((x) => x == Role.Admin.toString()) ||
+        (sourceAccount.idsAllowedToUpdate || []).includes(
+          securityContext.userId,
+        );
       const idsAllowedToRead = [
         ...new Set([...(sourceAccount.idsAllowedToRead ?? [])]),
       ];
@@ -75,12 +77,12 @@ export class MakePaymentCommandHandler
         command,
         user,
         sourceAccount.accountType,
-        isAdmin,
+        canUpdate,
         idsAllowedToRead,
       );
       const isAdded =
         await this.transactionRepository.addTransaction(transaction);
-      if (isAdded && isAdmin) {
+      if (isAdded && canUpdate) {
         await this.bankAccountRepository.update(sourceAccount.id, {
           availableBalance: Math.max(
             0,
@@ -98,7 +100,7 @@ export class MakePaymentCommandHandler
     command: MakePaymentCommand,
     user: User,
     accountType: BankAccountType,
-    isAdmin: boolean,
+    canUpdate: boolean,
     idsAllowedToRead: string[],
   ): Transaction {
     const transaction = new Transaction();
@@ -113,11 +115,10 @@ export class MakePaymentCommandHandler
     transaction.amount = command.amount;
     transaction.transactionDate = command.paymentDate;
     transaction.transactionNumber = command.transactionNumber;
-    transaction.status =
-      isAdmin || accountType == BankAccountType.Personal
-        ? TransactionStatusEnum.Success
-        : TransactionStatusEnum.Pending;
-    transaction.note = command.note;
+    transaction.status = canUpdate
+      ? TransactionStatusEnum.Success
+      : TransactionStatusEnum.Pending;
+    transaction.note = command.note ?? '';
     transaction.idsAllowedToRead = idsAllowedToRead;
     return transaction;
   }

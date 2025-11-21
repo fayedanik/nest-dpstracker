@@ -41,7 +41,7 @@ export class AuthRepository implements IAuthRepository {
     password: string,
   ): Promise<{ accessToken: string; refreshToken: string } | null> {
     const user = await this.userRepository.getItem({ email });
-    if (!user) return null;
+    if (!user || !user.isActive) return null;
     const isValid = await this.validateUser(email, password);
     if (!isValid) return null;
     return await this.generateTokens(user);

@@ -18,6 +18,7 @@ export class GenericRepository<TDomain, TPersist extends Document>
       const saved = await doc.save();
       return this.mapper.toDomain(saved.toObject());
     } catch (err) {
+      console.log(err);
       return null;
     }
   }
@@ -51,9 +52,13 @@ export class GenericRepository<TDomain, TPersist extends Document>
   }
 
   async getCount(filter?: FilterQuery<TDomain>): Promise<number> {
-    return await this.model
-      .countDocuments(this.mapper.toPersistFilter(filter))
-      .exec();
+    const securityContext = this.securityContextProvider.getSecurityContext();
+    const persistFilter = this.mapper.toPersistFilter(filter);
+    persistFilter.$or = [
+      { rolesAllowedToRead: { $in: securityContext.roles } },
+      { idsAllowedToRead: { $in: [securityContext.userId] } },
+    ];
+    return await this.model.countDocuments(persistFilter).exec();
   }
 
   async update(id: string, entity: Partial<TDomain>): Promise<TDomain | null> {

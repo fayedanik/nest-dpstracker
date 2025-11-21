@@ -50,7 +50,7 @@ export class TransactionDocument extends BaseSchema {
   })
   status: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   note: string;
 }
 

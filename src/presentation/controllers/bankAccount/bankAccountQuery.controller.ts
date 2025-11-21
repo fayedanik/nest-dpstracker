@@ -20,6 +20,7 @@ export class BankAccountQueryController {
 
   @HttpCode(HttpStatus.OK)
   @Get('GetAccounts')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.Admin, Role.User])
   GetAccounts(@Query() query: GetAccountsQuery) {
     return this.queryBus.execute(new GetAccountsQuery());

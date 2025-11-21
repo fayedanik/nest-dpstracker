@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import * as fs from 'node:fs';
 import * as process from 'node:process';
@@ -20,7 +13,7 @@ import { Role } from '../../shared/consts/role.const';
 @Controller('AdminCommand')
 export class AdminCommandController {
   @Get('ParseBankList')
-  @Roles([Role.Admin])
+  @Roles([Role.Admin, Role.User])
   @UseGuards(JwtAuthGuard, RolesGuard)
   public async ParseBankList(@Res() res: Response) {
     const { readFile, access } = fs.promises;
@@ -38,7 +31,7 @@ export class AdminCommandController {
             branches: district.branches.map((branch) => ({
               routing_number: branch.routing_number,
               swiftCode: branch.swiftCode,
-              branch_name: branch.branch_name
+              branch_name: branch.branch_name,
             })),
           })),
         } as BankListResponseDto;

@@ -42,7 +42,7 @@ export class TransactionCommandController {
   @HttpCode(HttpStatus.CREATED)
   @Post('MakePayment')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles([Role.Admin])
+  @Roles([Role.Admin, Role.User])
   public MakePayment(@Body() dto: MakePaymentCommandDto) {
     const command = new MakePaymentCommand(
       dto.sourceAc,
