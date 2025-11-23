@@ -4,6 +4,7 @@ import { Prop } from '@nestjs/mongoose';
 export class Dps extends EntityBase {
   status: string;
   dpsOwners: DpsOwners[];
+  installmentDates: Date[];
   constructor(
     public dpsName: string,
     public accountNumber: string,
@@ -15,6 +16,8 @@ export class Dps extends EntityBase {
     public totalDeposit: number,
   ) {
     super(randomUUID());
+    this.totalDeposit = totalDeposit ?? 0;
+    this.installmentDates = [];
   }
 }
 

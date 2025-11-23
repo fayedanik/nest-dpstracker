@@ -65,6 +65,7 @@ export class GenericRepository<TDomain, TPersist extends Document>
     const doc = await this.model
       .findByIdAndUpdate(id, this.mapper.toPersistUpdate(entity), { new: true })
       .exec();
+    console.log(doc);
     return doc ? this.mapper.toDomain(doc.toObject()) : null;
   }
 }

@@ -57,7 +57,9 @@ export class UpdateDpsCommandHandler
       dpsOwner.installmentDates = dpsOwner.installmentDates ?? [];
       dpsOwner.amountPaid = dpsOwner.amountPaid ?? 0;
       dpsOwner.installmentDates.push(command.paymentDate);
-      dpsOwner.amountPaid += dps.monthlyDeposit;
+      dpsOwner.amountPaid += Math.ceil(
+        dps.monthlyDeposit / (dps.dpsOwners.length ?? 1),
+      );
       const index = dps.dpsOwners.findIndex((x) => x.userId == command.ownerId);
       dps.dpsOwners[index] = dpsOwner;
       const result = await this.dpsRepository.update(dps.id, dps);

@@ -6,6 +6,7 @@ import { BankAccountModule } from './bankAccount.module';
 import { DpsModule } from './dps.module';
 import { TransactionModule } from './transaction.module';
 import { UserModule } from './user.module';
+import { GetStatsQueryHandler } from '../application/handlers/get-stats-query.handler';
 
 @Module({
   controllers: [DashboardQueryController],
@@ -18,6 +19,6 @@ import { UserModule } from './user.module';
     TransactionModule,
   ],
   exports: [],
-  providers: [],
+  providers: [GetStatsQueryHandler],
 })
 export class DashboardModule {}

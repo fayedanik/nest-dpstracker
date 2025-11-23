@@ -9,6 +9,7 @@ export interface ITransactionRepository extends IRepository<Transaction> {
     pageIndex?: number,
     pageLimit?: number,
   ): Promise<Transaction[]>;
+  getUserShareOfAccount(userId: string, accountNo: string): Promise<number>;
 }
 
 export const TRANSACTION_REPOSITORY = Symbol('TRANSACTION_REPOSITORY');

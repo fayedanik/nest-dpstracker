@@ -31,8 +31,8 @@ export class CreatUserCommandHandler
       return await this.userRepository.save(
         new User(
           command.email,
-          command.firstName ?? '',
-          command.lastName ?? '',
+          (command.firstName ?? '').trim(),
+          (command.lastName ?? '').trim(),
           command.password ?? '',
           command.phoneNumber ?? '',
         ),

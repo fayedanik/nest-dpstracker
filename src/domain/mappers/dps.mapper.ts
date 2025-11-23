@@ -14,6 +14,8 @@ export class DpsMapper {
       dpsName: dps.dpsName,
       accountNo: dps.accountNumber,
       monthlyAmount: dps.monthlyDeposit,
+      totalDeposit: dps.totalDeposit,
+      installmentDates: dps.installmentDates,
       durationMonths: dps.durationMonths,
       startDate: dps.startDate,
       maturityDate: dps.maturityDate,

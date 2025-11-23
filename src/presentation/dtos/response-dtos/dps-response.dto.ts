@@ -7,6 +7,8 @@ export interface DpsResponseDto {
   startDate: Date | string;
   maturityDate: Date | string;
   interestRate: number;
+  totalDeposit: number;
+  installmentDates: Date[];
   dpsOwners: {
     userId: string;
     displayName: string;

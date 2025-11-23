@@ -35,6 +35,14 @@ export class AddAccountCommandHandler
       if (command.accountType == BankAccountType.Personal) {
         accountHolderIds = [securityContext.userId];
       }
+      const dbAccount = await this.bankAccountRepository.getItem({
+        accountNo: command.accountNo,
+      });
+      if (dbAccount) {
+        return CommandResponse.failure(
+          ErrorMessageConst.BANK_ACCOUNT_ALREADY_EXIST,
+        );
+      }
       const account = new BankAccount(
         command.accountNo,
         command.bankName,

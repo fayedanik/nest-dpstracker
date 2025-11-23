@@ -31,12 +31,16 @@ export class DpsMapper implements IMapper<Dps, DpsDocument> {
 
   toPersistUpdate(domain: Partial<Dps>): Partial<DpsDocument> {
     const update: Partial<DpsDocument> = {};
+    if (domain.totalDeposit) update.totalDeposit = domain.totalDeposit;
+    if (domain.installmentDates)
+      update.installmentDates = domain.installmentDates;
     if (domain.lastUpdatedBy) {
       update.lastUpdatedBy = domain.lastUpdatedBy;
     }
     if (domain.dpsOwners) {
       update.dpsOwners = domain.dpsOwners;
     }
+    console.log(update);
     return update;
   }
 }

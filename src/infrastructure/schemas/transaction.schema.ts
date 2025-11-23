@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { TransactionTypeEnum } from '../../shared/consts/transactionType.enum';
 import { BaseSchema } from './base.schema';
 import { TransactionStatusEnum } from '../../shared/consts/transactionStatus.enum';
+import { PaymentTypeEnum } from '../../shared/consts/paymentType.enum';
 
 export class SourecInfo {
   @Prop({ type: String, required: true })
@@ -30,8 +31,8 @@ export class TransactionDocument extends BaseSchema {
   })
   transactionType: TransactionTypeEnum;
 
-  @Prop({ type: String })
-  paymentType: string;
+  @Prop({ type: String, enum: Object.values(PaymentTypeEnum) })
+  paymentType: PaymentTypeEnum;
 
   @Prop({ type: String })
   dpsId: string;

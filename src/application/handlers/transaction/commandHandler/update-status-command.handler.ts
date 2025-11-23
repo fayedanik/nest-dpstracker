@@ -15,6 +15,11 @@ import {
 } from '../../../ports/bank-account-repository.interface';
 import { TransactionTypeEnum } from '../../../../shared/consts/transactionType.enum';
 import { BankAccount } from '../../../../domain/entities/bank-account.entity';
+import { PaymentTypeEnum } from '../../../../shared/consts/paymentType.enum';
+import {
+  DPS_REPOSITORY,
+  type IDpsRepository,
+} from '../../../ports/dps.interface';
 
 @CommandHandler(UpdateStatusCommand)
 export class UpdateStatusCommandHandler
@@ -26,6 +31,8 @@ export class UpdateStatusCommandHandler
     private readonly transactionRepository: ITransactionRepository,
     @Inject(BANK_ACCOUNT_REPOSITORY)
     private readonly bankAccountRepository: IBankAccountRepository,
+    @Inject(DPS_REPOSITORY)
+    private readonly dpsRepository: IDpsRepository,
   ) {}
 
   async execute(
@@ -42,7 +49,6 @@ export class UpdateStatusCommandHandler
       const sourceAccount = await this.bankAccountRepository.getItem({
         accountNo: transaction.sourceAccount,
       });
-      console.log(sourceAccount);
       if (!sourceAccount) {
         return CommandResponse.failure(ErrorMessageConst.INVALID_TRANSACTION);
       }
@@ -66,22 +72,38 @@ export class UpdateStatusCommandHandler
         command.transactionId,
         transaction,
       );
-      if (result) {
-        await this.bankAccountRepository.update(sourceAccount.id, {
-          availableBalance: Math.max(
-            0,
-            sourceAccount.availableBalance - transaction.amount,
-          ),
-        });
-        if (
-          destinationAccount &&
-          transaction.transactionType == TransactionTypeEnum.TransferMoney
-        ) {
-          await this.bankAccountRepository.update(destinationAccount.id, {
-            availableBalance:
-              destinationAccount.availableBalance + transaction.amount,
+      if (!result) {
+        return CommandResponse.failure(ErrorMessageConst.SOMETHING_WENT_WRONT);
+      }
+      if (
+        transaction.transactionType == TransactionTypeEnum.Payment &&
+        transaction.paymentType == PaymentTypeEnum.Dps
+      ) {
+        const dps = await this.dpsRepository.getItem({ id: transaction.dpsId });
+        if (dps != null) {
+          await this.dpsRepository.update(dps.id, {
+            totalDeposit: dps.totalDeposit + dps.monthlyDeposit,
+            installmentDates: [
+              ...(dps.installmentDates ?? []),
+              transaction.transactionDate,
+            ],
           });
         }
+      }
+      await this.bankAccountRepository.update(sourceAccount.id, {
+        availableBalance: Math.max(
+          0,
+          sourceAccount.availableBalance - transaction.amount,
+        ),
+      });
+      if (
+        destinationAccount &&
+        transaction.transactionType == TransactionTypeEnum.TransferMoney
+      ) {
+        await this.bankAccountRepository.update(destinationAccount.id, {
+          availableBalance:
+            destinationAccount.availableBalance + transaction.amount,
+        });
       }
       return result ? CommandResponse.success() : CommandResponse.failure();
     } catch (e) {

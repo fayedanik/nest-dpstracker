@@ -28,6 +28,7 @@ import {
   DPS_REPOSITORY,
   type IDpsRepository,
 } from '../../../ports/dps.interface';
+import { Dps } from '../../../../domain/entities/dps.entity';
 
 @CommandHandler(MakePaymentCommand)
 export class MakePaymentCommandHandler
@@ -49,6 +50,7 @@ export class MakePaymentCommandHandler
     command: MakePaymentCommand,
   ): Promise<CommandResponse<boolean>> {
     try {
+      console.log(command);
       const securityContext = this.securityContextProvider.getSecurityContext();
       const user = await this.userRepository.getItem({
         id: securityContext.userId,
@@ -64,6 +66,23 @@ export class MakePaymentCommandHandler
       }
       if (sourceAccount.availableBalance < command.amount) {
         return CommandResponse.failure(ErrorMessageConst.NOT_ENOUGH_BALANCE);
+      }
+      let dps: Dps | null = null;
+      if (command.paymentType === PaymentTypeEnum.Dps) {
+        dps = await this.dpsRepository.getItem({ id: command.dpsId });
+        if (!dps) {
+          return CommandResponse.failure(ErrorMessageConst.INVALID_DPS_ID);
+        }
+        const isAlreadyAddedPayment = (dps.installmentDates ?? []).some(
+          (x) =>
+            x.getFullYear() == command.paymentDate.getFullYear() &&
+            x.getMonth() == command.paymentDate.getMonth(),
+        );
+        if (isAlreadyAddedPayment) {
+          return CommandResponse.failure(
+            ErrorMessageConst.DPS_PAYMENT_ALREADY_ADDED,
+          );
+        }
       }
       const canUpdate =
         securityContext.roles.some((x) => x == Role.Admin.toString()) ||
@@ -83,6 +102,15 @@ export class MakePaymentCommandHandler
       const isAdded =
         await this.transactionRepository.addTransaction(transaction);
       if (isAdded && canUpdate) {
+        if (dps) {
+          await this.dpsRepository.update(dps.id, {
+            totalDeposit: dps.totalDeposit + dps.monthlyDeposit,
+            installmentDates: [
+              ...(dps.installmentDates ?? []),
+              command.paymentDate,
+            ],
+          });
+        }
         await this.bankAccountRepository.update(sourceAccount.id, {
           availableBalance: Math.max(
             0,

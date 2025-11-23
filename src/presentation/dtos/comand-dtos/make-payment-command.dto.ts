@@ -1,5 +1,6 @@
 import {
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +9,7 @@ import {
 } from 'class-validator';
 import { Optional } from '@nestjs/common';
 import { Type } from 'class-transformer';
+import { PaymentTypeEnum } from '../../../shared/consts/paymentType.enum';
 
 export class MakePaymentCommandDto {
   @IsNotEmpty()
@@ -15,10 +17,10 @@ export class MakePaymentCommandDto {
   sourceAc: string;
 
   @IsNotEmpty()
-  @IsString()
-  paymentType: string;
+  @IsEnum(PaymentTypeEnum)
+  paymentType: PaymentTypeEnum;
 
-  @ValidateIf((o) => o.paymentType == 'dps')
+  @ValidateIf((o) => o.paymentType == PaymentTypeEnum.Dps)
   @IsOptional()
   @IsString()
   dpsId: string;

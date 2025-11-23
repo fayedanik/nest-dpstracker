@@ -51,4 +51,20 @@ export class TransactionRepository
       return false;
     }
   }
+
+  async getUserShareOfAccount(
+    userId: string,
+    accountNo: string,
+  ): Promise<number> {
+    const result = await this.transactionModel.aggregate([
+      {
+        $match: {
+          'sourceInfo.userId': userId,
+          destinationAccount: accountNo,
+        },
+      },
+      { $group: { _id: null, totalAmount: { $sum: '$amount' } } },
+    ]);
+    return result[0]?.totalAmount ?? 0;
+  }
 }

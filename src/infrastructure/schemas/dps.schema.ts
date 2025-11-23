@@ -33,6 +33,8 @@ export class DpsDocument extends BaseSchema {
   interestRate: number;
   @Prop({ type: Number, required: true, default: 0 })
   totalDeposit: number;
+  @Prop({ type: [Date], default: [] })
+  installmentDates: Date[];
   @Prop({
     type: String,
     required: true,
