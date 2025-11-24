@@ -13,7 +13,7 @@ export class Dps extends EntityBase {
     public startDate: Date,
     public maturityDate: Date,
     public interestRate: number,
-    public totalDeposit?: number,
+    public totalDeposit: number,
   ) {
     super(randomUUID());
     this.totalDeposit = totalDeposit ?? 0;
