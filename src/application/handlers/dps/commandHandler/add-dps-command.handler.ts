@@ -62,7 +62,6 @@ export class AddDpsCommandHandler
         command.startDate,
         command.maturityDate,
         command.interestRate,
-        command.monthlyDeposit,
       );
       dps.addPdsInfo(securityContext.userId);
       dps.idsAllowedToRead = command.dpsOwners;
