@@ -39,7 +39,6 @@ export class GenericRepository<TDomain, TPersist extends Document>
     const persistFilter = this.mapper.toPersistFilter(filter);
     const securityContext = this.securityContextProvider.getSecurityContext();
     persistFilter.$or = [
-      { rolesAllowedToRead: { $in: securityContext.roles } },
       { idsAllowedToRead: { $in: [securityContext.userId] } },
     ];
     const doc = await this.model
@@ -55,7 +54,6 @@ export class GenericRepository<TDomain, TPersist extends Document>
     const securityContext = this.securityContextProvider.getSecurityContext();
     const persistFilter = this.mapper.toPersistFilter(filter);
     persistFilter.$or = [
-      { rolesAllowedToRead: { $in: securityContext.roles } },
       { idsAllowedToRead: { $in: [securityContext.userId] } },
     ];
     return await this.model.countDocuments(persistFilter).exec();
@@ -65,7 +63,6 @@ export class GenericRepository<TDomain, TPersist extends Document>
     const doc = await this.model
       .findByIdAndUpdate(id, this.mapper.toPersistUpdate(entity), { new: true })
       .exec();
-    console.log(doc);
     return doc ? this.mapper.toDomain(doc.toObject()) : null;
   }
 }
