@@ -41,6 +41,17 @@ export class DpsRepository
     }
   }
 
+  async deleteDpsByAccountNo(accountNo: string): Promise<boolean> {
+    try {
+      const response = await this.dpsModel
+        .deleteMany({ accountNumber: accountNo })
+        .exec();
+      return response.acknowledged;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async getDpsListByUserId(userId: string): Promise<Dps[]> {
     try {
       const response = await this.dpsModel

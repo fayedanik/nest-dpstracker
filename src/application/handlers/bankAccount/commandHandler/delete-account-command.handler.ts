@@ -9,6 +9,14 @@ import {
 import { CommandResponse } from '../../../../shared/generic-class/command-response.class';
 import { ErrorMessageConst } from '../../../../shared/consts/error.const';
 import { Role } from '../../../../shared/consts/role.const';
+import {
+  DPS_REPOSITORY,
+  type IDpsRepository,
+} from '../../../ports/dps.interface';
+import {
+  type ITransactionRepository,
+  TRANSACTION_REPOSITORY,
+} from '../../../ports/transaction.interface';
 
 @CommandHandler(DeleteAccountCommand)
 export class DeleteAccountCommandHandler
@@ -18,6 +26,10 @@ export class DeleteAccountCommandHandler
     private readonly securityContextProvider: SecurityContextProvider,
     @Inject(BANK_ACCOUNT_REPOSITORY)
     private readonly bankAccountRepository: IBankAccountRepository,
+    @Inject(DPS_REPOSITORY)
+    private readonly dpsRepository: IDpsRepository,
+    @Inject(TRANSACTION_REPOSITORY)
+    private readonly transactionRepository: ITransactionRepository,
   ) {}
 
   async execute(
@@ -32,15 +44,19 @@ export class DeleteAccountCommandHandler
         return CommandResponse.failure(ErrorMessageConst.CONTENT_NOT_FOUND);
       }
       if (
-        !securityContext.roles.includes(Role.Admin) ||
-        !account.idsAllowedToDelete?.includes(securityContext.userId)
+        securityContext.roles.includes(Role.Admin) ||
+        account.idsAllowedToDelete?.includes(securityContext.userId)
       ) {
+        const response = await this.bankAccountRepository.deleteAccount(
+          command.id,
+        );
+        if (response) {
+          await this.dpsRepository.deleteDpsByAccountNo(account.accountNo);
+        }
+        return response ? CommandResponse.success() : CommandResponse.failure();
+      } else {
         return CommandResponse.failure(ErrorMessageConst.FORBIDDEN);
       }
-      const response = await this.bankAccountRepository.deleteAccount(
-        command.id,
-      );
-      return CommandResponse.success(response);
     } catch (error) {
       return CommandResponse.failure();
     }

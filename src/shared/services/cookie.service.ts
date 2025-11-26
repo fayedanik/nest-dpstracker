@@ -6,8 +6,7 @@ export class CookieService {
   private defaultOptions: CookieOptions = {
     httpOnly: true,
     secure: process.env.TENANT === 'production',
-    sameSite:
-      process.env.TENANT === 'production' ? ('none' as const) : 'strict',
+    sameSite: process.env.TENANT === 'production' ? ('none' as const) : 'lax',
     path: '/',
   };
   setCookie(

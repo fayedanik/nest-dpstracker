@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DpsDocument, DpsSchema } from '../infrastructure/schemas/dps.schema';
 import { DpsCommandController } from '../presentation/controllers/dps/dpsCommand.controller';
@@ -22,7 +22,7 @@ import { UpdateDpsCommandHandler } from '../application/handlers/dps/commandHand
     CqrsModule,
     CoreModule,
     UserModule,
-    BankAccountModule,
+    forwardRef(() => BankAccountModule),
     MongooseModule.forFeature([
       {
         name: DpsDocument.name,

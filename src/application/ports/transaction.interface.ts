@@ -3,6 +3,7 @@ import { Transaction } from '../../domain/entities/transaction.entity';
 
 export interface ITransactionRepository extends IRepository<Transaction> {
   addTransaction(transaction: Transaction): Promise<boolean>;
+  deleteTransactionByAccountNo(accountNo: string): Promise<boolean>;
   getTransactions(
     type: string,
     userId: string,

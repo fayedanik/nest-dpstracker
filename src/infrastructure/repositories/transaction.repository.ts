@@ -6,6 +6,7 @@ import { FilterQuery, Model, Promise } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { TransactionMapper } from '../mappers/transaction.mapper';
 import { SecurityContextProvider } from '../../core/SecurityContext/security-context-provider.service';
+import { TransactionStatusEnum } from '../../shared/consts/transactionStatus.enum';
 
 export class TransactionRepository
   extends GenericRepository<Transaction, TransactionDocument>
@@ -61,10 +62,22 @@ export class TransactionRepository
         $match: {
           'sourceInfo.userId': userId,
           destinationAccount: accountNo,
+          status: TransactionStatusEnum.Success,
         },
       },
       { $group: { _id: null, totalAmount: { $sum: '$amount' } } },
     ]);
     return result[0]?.totalAmount ?? 0;
+  }
+
+  async deleteTransactionByAccountNo(accountNo: string): Promise<boolean> {
+    try {
+      const response = await this.transactionModel.deleteMany({
+        $or: [{ sourceAccount: accountNo }, { destinationAccount: accountNo }],
+      });
+      return response.acknowledged;
+    } catch (e) {
+      return false;
+    }
   }
 }

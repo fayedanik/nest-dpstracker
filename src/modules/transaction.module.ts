@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MakePaymentCommandHandler } from '../application/handlers/transaction/commandHandler/make-payment-command.handler';
 import { TransferMoneyCommandHandler } from '../application/handlers/transaction/commandHandler/transfer-money-command.handler';
 import { GetTransactionsQueryHandler } from '../application/handlers/transaction/queryHandler/get-transactions-query.handler';
@@ -31,7 +31,7 @@ import { UpdateStatusCommandHandler } from '../application/handlers/transaction/
       },
     ]),
     UserModule,
-    BankAccountModule,
+    forwardRef(() => BankAccountModule),
     DpsModule,
   ],
   exports: [TRANSACTION_REPOSITORY],

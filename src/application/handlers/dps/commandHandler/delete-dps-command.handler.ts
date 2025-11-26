@@ -27,13 +27,14 @@ export class DeleteDpsCommandHandler
         return CommandResponse.failure(ErrorMessageConst.CONTENT_NOT_FOUND);
       }
       if (
-        !securityContext.roles.includes(Role.Admin) ||
-        !dps.idsAllowedToDelete?.includes(securityContext.userId)
+        securityContext.roles.includes(Role.Admin) ||
+        dps.idsAllowedToDelete?.includes(securityContext.userId)
       ) {
+        const response = await this.dpsRepository.deleteDps(command.id);
+        return CommandResponse.success(response);
+      } else {
         return CommandResponse.failure(ErrorMessageConst.FORBIDDEN);
       }
-      const response = await this.dpsRepository.deleteDps(command.id);
-      return CommandResponse.success(response);
     } catch (error) {
       return CommandResponse.failure();
     }

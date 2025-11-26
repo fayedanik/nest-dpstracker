@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BankAccountCommandController } from '../presentation/controllers/bankAccount/bankAccountCommand.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CoreModule } from './core.module';
@@ -18,6 +18,8 @@ import { USER_REPOSITORY } from '../application/ports/user-repository.interface'
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { UserModule } from './user.module';
 import { DeleteAccountCommandHandler } from '../application/handlers/bankAccount/commandHandler/delete-account-command.handler';
+import { DpsModule } from './dps.module';
+import { TransactionModule } from './transaction.module';
 
 @Module({
   controllers: [BankAccountCommandController, BankAccountQueryController],
@@ -25,6 +27,8 @@ import { DeleteAccountCommandHandler } from '../application/handlers/bankAccount
     CqrsModule,
     CoreModule,
     UserModule,
+    forwardRef(() => DpsModule),
+    forwardRef(() => TransactionModule),
     MongooseModule.forFeature([
       {
         name: BankAccountDocument.name,

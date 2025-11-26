@@ -71,7 +71,10 @@ export class IdentityCommandController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const refreshToken = req.cookies[`${this._refreshCookie}`] as string;
+    let refreshToken = req.cookies[`${this._refreshCookie}`] as string;
+    if (!refreshToken) {
+      refreshToken = req.body['refresh_token'];
+    }
     if (!refreshToken) {
       throw new UnauthorizedException('Unauthorized');
     }

@@ -5,6 +5,7 @@ import { Dps } from '../../domain/entities/dps.entity';
 export interface IDpsRepository extends IRepository<Dps> {
   addDps(dps: Dps): Promise<boolean>;
   deleteDps(id: string): Promise<boolean>;
+  deleteDpsByAccountNo(accountNo: string): Promise<boolean>;
   getDpsListByUserId(userId: string): Promise<Dps[]>;
 }
 
