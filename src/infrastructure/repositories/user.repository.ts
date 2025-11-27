@@ -27,16 +27,7 @@ export class UserRepository
 
   async getUsers(userIds: string[], query: GetUsersQuery): Promise<User[]> {
     try {
-      const filter: RootFilterQuery<UserDocument> = {};
-      if (userIds.length > 0) {
-        filter._id = { $in: userIds };
-      }
-      if (query?.searchText) {
-        const words = query.searchText.trim().split(' ');
-        filter.$and = words.map((word) => ({
-          displayName: { $regex: new RegExp(word, 'i') },
-        }));
-      }
+      const filter = this.getUserQuerySearchFilter(userIds, query);
       let cmd = this.userModel.find(filter);
       if (query?.pageLimit) {
         cmd = cmd
@@ -49,6 +40,33 @@ export class UserRepository
       return [];
     }
   }
+
+  async getTotalUsersCount(
+    userIds: string[],
+    query: GetUsersQuery,
+  ): Promise<number> {
+    try {
+      const filter = this.getUserQuerySearchFilter(userIds, query);
+      return await this.userModel.countDocuments(filter).exec();
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  private getUserQuerySearchFilter(userIds: string[], query: GetUsersQuery) {
+    const filter: RootFilterQuery<UserDocument> = {};
+    if (userIds.length > 0) {
+      filter._id = { $in: userIds };
+    }
+    if (query?.searchText) {
+      const words = query.searchText.trim().split(' ');
+      filter.$and = words.map((word) => ({
+        displayName: { $regex: new RegExp(word, 'i') },
+      }));
+    }
+    return filter;
+  }
+
   async getUserPasswordHash(email: string): Promise<string | null> {
     try {
       const user = await this.userModel

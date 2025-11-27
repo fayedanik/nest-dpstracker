@@ -8,6 +8,7 @@ export interface IUserRepository extends IRepository<User> {
   activateUser(userId: string): Promise<boolean>;
   getUserPasswordHash(email: string): Promise<string | null>;
   getUsers(userIds: string[], query?: GetUsersQuery): Promise<User[]>;
+  getTotalUsersCount(userIds: string[], query?: GetUsersQuery): Promise<number>;
 }
 
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');

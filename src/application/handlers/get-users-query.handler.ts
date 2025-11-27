@@ -22,7 +22,7 @@ export class GetUsersQueryHandler
   ): Promise<QueryResponse<GetUserResponseDto>> {
     try {
       const users = await this.userRepository.getUsers([], query);
-      const total = await this.userRepository.getCount();
+      const total = await this.userRepository.getTotalUsersCount([], query);
       const response: GetUserResponseDto = {
         users: users.map((user) => {
           return UserDtoMapper.toDto(user);
