@@ -23389,9 +23389,20 @@
     ]
   },
   {
-    "name": "NATIONAL CREDIT &amp; COMMERCE BANK LIMITED",
+    "name": "NATIONAL CREDIT & COMMERCE BANK LIMITED",
     "bank_code": "160",
-    "districts": []
+    "districts": [
+      {
+        "district_name": "CHITTAGONG",
+        "branches": [
+          {
+            "routing_number": "160155808",
+            "branch_name": "O.R. Nizam Road Branch"
+          }
+
+        ]
+      }
+    ]
   },
   {
     "name": "NRB BANK LIMITED",
